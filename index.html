@@ -1,1 +1,752 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>자산개발 업무 관리</title>
+  <style>
+    /* ===== CSS: 단일 파일 업무용 대시보드 디자인 ===== */
+    :root{--navy:#172033;--navy2:#24324a;--blue:#2368a2;--bg:#f4f6f9;--line:#dce3ec;--muted:#657386;--text:#202938;--white:#fff;--soft:#eef4fa;--orange:#b65b14;--red:#b42318;--yellow:#946200;--green:#157347;--r:8px}
+    *{box-sizing:border-box} body{margin:0;background:var(--bg);color:var(--text);font-family:"Malgun Gothic","Apple SD Gothic Neo",Arial,sans-serif;line-height:1.55} button,input,select,textarea{font:inherit} button{cursor:pointer} [onclick]{cursor:pointer}
+    header{position:sticky;top:0;z-index:30;display:flex;justify-content:space-between;align-items:center;gap:14px;padding:13px 18px;background:var(--navy);color:#fff;border-bottom:1px solid rgba(255,255,255,.12)}
+    h1{margin:0;font-size:18px} h2{margin:0;color:var(--navy);font-size:23px} h3{margin:0 0 12px;color:var(--navy);font-size:17px}.sub{margin:2px 0 0;color:#cbd5e1;font-size:12px}.muted{color:var(--muted);font-size:13px}
+    .brand{display:flex;align-items:center;gap:10px}.mark{display:grid;place-items:center;width:36px;height:36px;border:1px solid rgba(255,255,255,.25);border-radius:6px;background:#263852;font-weight:800}
+    .top-actions,.tools,.row{display:flex;gap:8px;flex-wrap:wrap;align-items:center}.layout{display:grid;grid-template-columns:230px minmax(0,1fr);min-height:calc(100vh - 64px)}
+    nav{position:sticky;top:64px;height:calc(100vh - 64px);padding:14px 10px;background:#202c42;overflow:auto}.navbtn{width:100%;display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;padding:11px 12px;border:1px solid transparent;border-radius:var(--r);background:transparent;color:#dce6f2;text-align:left}.navbtn:hover,.navbtn.active{background:#2b3d59;color:#fff;border-color:rgba(255,255,255,.12)}.count{min-width:24px;padding:1px 6px;border-radius:999px;background:#1c5f97;color:#dbeafe;font-size:12px;text-align:center}
+    main{min-width:0;padding:20px}.tab{display:none}.tab.active{display:block}.title{display:flex;justify-content:space-between;align-items:flex-end;gap:12px;margin-bottom:14px}.section{margin-bottom:16px;padding:16px;background:#fff;border:1px solid #e2e8f0;border-radius:var(--r)}
+    .grid{display:grid;gap:12px}.kpis{grid-template-columns:repeat(4,minmax(0,1fr))}.cols{grid-template-columns:minmax(0,1.2fr) minmax(320px,.8fr)}.cards3{grid-template-columns:repeat(3,minmax(0,1fr))}
+    .kpi{min-height:90px;padding:13px;border:1px solid #e2e8f0;border-radius:var(--r);background:#fbfcfe}.kpi small{display:block;margin-bottom:6px;color:var(--muted);font-weight:700}.kpi b{display:block;color:var(--navy);font-size:23px}.kpi span{display:block;margin-top:4px;color:var(--muted);font-size:12px}
+    #dashboard{--dash-gap:10px}.dash-shell{display:grid;gap:var(--dash-gap)}#dashboard .title{margin-bottom:10px}#dashboard .section{margin-bottom:0;padding:12px;background:linear-gradient(180deg,#fff,#fbfcfe)}.dash-top{display:grid;grid-template-columns:1fr 1fr;gap:10px}.summary-panel{padding:13px 14px;border:1px solid #dce4ee;border-radius:var(--r);background:#fff}.summary-panel h3{display:flex;align-items:center;gap:8px;margin:0 0 10px;font-size:15px}.summary-panel h3:before{content:"";width:4px;height:16px;border-radius:99px;background:var(--blue)}.mini-metrics{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px}.mini{min-height:52px;padding:8px 9px;border:1px solid #e3e9f1;border-radius:7px;background:#f8fbff}.mini small{display:block;margin-bottom:2px;color:var(--muted);font-size:11px;font-weight:800}.mini b{display:block;color:#132238;font-size:17px;line-height:1.15}.mini span{display:block;margin-top:2px;color:#6b7788;font-size:10px}#dashboard .kpis{gap:10px}#dashboard .kpi{min-height:66px;padding:9px 11px;border-color:#dce4ee;background:#fff}#dashboard .kpi small{margin-bottom:3px;font-size:11px}#dashboard .kpi b{font-size:18px;line-height:1.2}#dashboard .kpi span{margin-top:2px;font-size:10px}.dash-sites{grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}.dash-sites .section h3{margin-bottom:8px;font-size:14px}.dash-sites .kpi{min-height:66px;background:#f8fbff}.dash-widgets{grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}.dash-widgets .section{min-height:150px}.dash-widgets h3{margin-bottom:6px;font-size:14px}.dash-widgets .item{padding:6px 0}.dash-widgets .item b{font-size:12px}.dash-widgets .item span{font-size:10px}.dash-widgets .kpi{min-height:58px}.dash-click{cursor:pointer}.dash-click:hover{border-color:#bfdbfe;box-shadow:0 4px 14px rgba(37,99,235,.12)}.widget-note{display:block;color:#64748b;font-size:11px;font-weight:700}
+    .btn{display:inline-flex;align-items:center;justify-content:center;gap:5px;min-height:38px;padding:8px 12px;border:1px solid #cbd5e1;border-radius:7px;background:#fff;color:var(--text);font-weight:700}.btn:hover{background:#f8fafc}.btn.selected{background:var(--navy);border-color:var(--navy);color:#fff}.primary{background:var(--blue);border-color:var(--blue);color:#fff}.danger{background:#fff0ee;border-color:#f1b7b1;color:var(--red)}.warn{background:#fff3e7;border-color:#f6c998;color:var(--orange)}.small{min-height:30px;padding:5px 8px;font-size:12px}
+    .field{width:100%;min-height:38px;padding:8px 10px;border:1px solid #cbd5e1;border-radius:7px;background:#fff;color:var(--text);outline:none}.field:focus{border-color:var(--blue);box-shadow:0 0 0 3px rgba(35,104,162,.12)} label{display:block;margin-bottom:5px;color:#4b5563;font-size:13px;font-weight:700} textarea.field{min-height:78px;resize:vertical}
+    .form{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px}.wide{grid-column:span 2}.full{grid-column:1/-1}.sticky-actions{position:sticky;bottom:0;display:flex;justify-content:flex-end;gap:8px;flex-wrap:wrap;margin:16px -16px -16px;padding:12px 16px;background:rgba(255,255,255,.96);border-top:1px solid #e2e8f0}
+    .tablebox{overflow:auto;border:1px solid #e2e8f0;border-radius:var(--r);background:#fff} table{width:100%;min-width:1180px;border-collapse:collapse;font-size:13px} th,td{padding:9px 8px;border-bottom:1px solid #e2e8f0;text-align:left;white-space:nowrap;vertical-align:middle} th{position:sticky;top:0;z-index:2;background:#edf2f7;color:#243247;font-weight:800} th.sort{cursor:pointer} tbody tr:hover{background:#f7fbff} tfoot td{background:#e9f0f7;font-weight:800;color:var(--navy)}.num{text-align:right;font-variant-numeric:tabular-nums}
+    .badge{display:inline-flex;align-items:center;min-height:23px;padding:3px 8px;border-radius:999px;border:1px solid transparent;font-size:12px;font-weight:800}.임대중{background:#e8f2fb;color:#174b7a;border-color:#bdd7ee}.공실{background:#fff3e7;color:var(--orange);border-color:#f4c99c}.만기예정{background:#fff8d8;color:var(--yellow);border-color:#ead982}.만기임박{background:#fff0d5;color:var(--orange);border-color:#f2bb6c}.계약종료{background:#fff0ee;color:var(--red);border-color:#f4bbb5}.normal{background:#f4f6f9;color:#4b5563;border-color:#d7dde5}
+    .list{display:grid;gap:8px;margin:0;padding:0;list-style:none}.item{display:flex;justify-content:space-between;gap:10px;padding:10px 0;border-bottom:1px solid #e2e8f0}.item:last-child{border-bottom:0}.item b{display:block}.item span{display:block;color:var(--muted);font-size:12px}.empty{padding:24px;border:1px dashed #cbd5e1;border-radius:var(--r);background:#fbfcfe;color:var(--muted);text-align:center}.restore-list{display:grid;gap:10px}.restore-item{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:12px 14px;border:1px solid #e5e7eb;border-radius:10px;background:#fff}.restore-item strong{display:block}.restore-item span{display:block;color:#6b7280;font-size:12px}.restore-actions{display:flex;gap:8px;flex-wrap:wrap}
+    .modal-bg{position:fixed;inset:0;z-index:80;display:none;align-items:center;justify-content:center;padding:18px;background:rgba(15,23,42,.48)}.modal-bg.open{display:flex}.modal{width:min(760px,100%);max-height:88vh;overflow:auto;background:#fff;border:1px solid #e2e8f0;border-radius:var(--r)}.modal-head{position:sticky;top:0;display:flex;justify-content:space-between;align-items:center;padding:14px 16px;background:#fff;border-bottom:1px solid #e2e8f0}.modal-body{padding:16px}.detail{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}.cell{padding:10px;border:1px solid #e2e8f0;border-radius:7px;background:#fbfcfe}.cell strong{display:block;color:var(--muted);font-size:12px}
+    .cal-head{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-bottom:10px}.calendar{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));overflow:hidden;border:1px solid #e2e8f0;border-radius:var(--r);background:#fff}.dow,.day{min-height:88px;padding:7px;border-right:1px solid #e2e8f0;border-bottom:1px solid #e2e8f0}.dow:nth-child(7n),.day:nth-child(7n){border-right:0}.dow{min-height:auto;background:#edf2f7;text-align:center;font-weight:800}.day.out{background:#fafbfc;color:#a0a8b3}.numday{display:inline-grid;place-items:center;width:25px;height:25px;border-radius:999px;font-weight:800;font-size:12px}.today .numday{background:var(--blue);color:#fff}.event{display:block;width:100%;margin-top:4px;padding:4px 6px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;border:1px solid #bdd7ee;border-radius:6px;background:#e8f2fb;color:#174b7a;font-size:11px;text-align:left}
+    .expiry-layout{display:grid;grid-template-columns:minmax(360px,.85fr) minmax(520px,1.15fr);gap:14px;align-items:start}.compact-calendar .calendar{font-size:12px}.compact-calendar .dow,.compact-calendar .day{min-height:54px;padding:5px}.compact-calendar .numday{width:21px;height:21px;font-size:11px}.compact-calendar .event{margin-top:2px;padding:2px 4px;font-size:10px}
+    .barrow{display:grid;grid-template-columns:145px minmax(0,1fr)90px;align-items:center;gap:10px;margin:9px 0;font-size:13px}.track{height:12px;overflow:hidden;background:#e2e8f0;border-radius:999px}.fill{height:100%;background:var(--blue);border-radius:999px}.donut{--v:0;width:142px;height:142px;display:grid;place-items:center;margin:6px auto 12px;border-radius:50%;background:radial-gradient(circle closest-side,#fff 69%,transparent 70%),conic-gradient(var(--blue) calc(var(--v)*1%),#e2e8f0 0);border:1px solid #e2e8f0;color:var(--navy);font-weight:800}
+    .mobile{display:none;gap:10px}.mcard{padding:13px;border:1px solid #e2e8f0;border-radius:var(--r);background:#fff}.mcard h4{margin:0 0 8px;color:var(--navy)}.mcard dl{display:grid;grid-template-columns:92px minmax(0,1fr);gap:5px 8px;margin:0;font-size:13px}.mcard dt{color:var(--muted);font-weight:700}.mcard dd{margin:0;word-break:break-word}.toast{position:fixed;right:18px;bottom:18px;z-index:100;display:none;max-width:360px;padding:12px 14px;border-radius:var(--r);background:var(--navy);color:#fff;font-weight:700}.toast.show{display:block}
+    .print-only{display:none}@media print{body.print-rent header,body.print-rent nav,body.print-rent .tab:not(#rent),body.print-rent .title .btn,body.print-rent .tools,body.print-rent .mobile,body.print-rent #rentSiteSummary{display:none!important}body.print-rent .layout{display:block}body.print-rent main{padding:0}body.print-rent #rent{display:block!important}body.print-rent .tablebox{border:0;overflow:visible}body.print-rent table{min-width:0;font-size:10px}body.print-rent .print-only{display:block;margin:0 0 10px;color:#172033}}
+    @media(max-width:1100px){.kpis,.cards3,.dash-top{grid-template-columns:repeat(2,minmax(0,1fr))}.mini-metrics{grid-template-columns:repeat(2,minmax(0,1fr))}.cols,.expiry-layout,.dash-widgets{grid-template-columns:1fr}.form{grid-template-columns:repeat(2,minmax(0,1fr))}}
+    @media(max-width:760px){header{align-items:flex-start;flex-direction:column}.layout{display:block}nav{position:sticky;top:0;z-index:25;height:auto;display:flex;gap:6px;overflow-x:auto}.navbtn{width:auto;white-space:nowrap;margin:0}main{padding:14px}.title{align-items:flex-start;flex-direction:column}.kpis,.cards3,.form,.detail{grid-template-columns:1fr}.wide,.full{grid-column:auto}.tablebox.hide-mobile{display:none}.mobile{display:grid}.dow,.day{min-height:74px;padding:5px}.event{font-size:10px}.barrow{grid-template-columns:86px minmax(0,1fr)58px}}
+    /* ===== REMS UI Redesign: B2B SaaS / public-sector management system ===== */
+    :root{--navy:#111827;--navy2:#1f2937;--blue:#2563eb;--blue-dark:#1d4ed8;--bg:#f9fafb;--line:#e5e7eb;--muted:#6b7280;--text:#111827;--white:#fff;--soft:#eff6ff;--orange:#f97316;--red:#dc2626;--yellow:#d97706;--green:#15803d;--r:12px}
+    body{background:var(--bg);color:var(--text);font-family:"Pretendard","Noto Sans KR","Malgun Gothic","Apple SD Gothic Neo",Arial,sans-serif;font-size:14px}
+    header{height:64px;padding:0 24px;background:#0f172a;box-shadow:0 2px 8px rgba(15,23,42,.18);border-bottom:0}
+    h1{font-size:18px;font-weight:600;letter-spacing:0} h1 span{color:#bfdbfe;font-size:13px;font-weight:600}.sub{color:#9ca3af}.brand{gap:12px}.mark{width:40px;height:40px;border:1px solid rgba(147,197,253,.36);border-radius:10px;background:#1e3a8a;color:#fff;font-size:20px;box-shadow:inset 0 1px 0 rgba(255,255,255,.16)}
+    .layout{grid-template-columns:232px minmax(0,1fr);min-height:calc(100vh - 64px)}
+    nav{top:64px;height:calc(100vh - 64px);padding:16px 12px;background:#fff;border-right:1px solid var(--line);box-shadow:1px 0 4px rgba(15,23,42,.03)}
+    .navbtn{position:relative;justify-content:flex-start;gap:10px;margin-bottom:6px;padding:18px 14px 18px 15px;border:0;border-left:3px solid transparent;border-radius:0 10px 10px 0;background:transparent;color:#374151;font-weight:700}
+    .navbtn span:first-child{min-width:22px;text-align:center}.navbtn:hover{background:#f3f4f6;color:#111827}.navbtn.active{background:var(--soft);color:var(--blue-dark);border-left-color:var(--blue)}
+    .navbtn .count{margin-left:auto}.count{min-width:28px;padding:3px 9px;border-radius:999px;background:#dbeafe;color:#1d4ed8;font-size:11px;font-weight:800}
+    main{padding:22px}.title{align-items:center;margin-bottom:14px}h2{font-size:24px;font-weight:800;color:#0f172a;letter-spacing:0}h3{font-size:16px;color:#111827}
+    .btn{min-height:40px;padding:9px 14px;border:1px solid #d1d5db;border-radius:8px;background:#fff;color:#111827;font-weight:700;transition:background .15s,border-color .15s,color .15s,box-shadow .15s}.btn:hover{background:#f9fafb;border-color:#9ca3af}.btn.primary,.primary{background:var(--blue);border-color:var(--blue);color:#fff}.btn.primary:hover,.primary:hover{background:var(--blue-dark);border-color:var(--blue-dark)}.btn.secondary{background:#fff;border-color:#d1d5db;color:#374151}.btn.secondary:hover{background:#f3f4f6}.btn.danger,.danger{background:#fff;border-color:#fecaca;color:var(--red)}.btn.danger:hover,.danger:hover{background:#fef2f2;border-color:#fca5a5}.btn.warn,.warn{background:#fff7ed;border-color:#fed7aa;color:#c2410c}.btn.selected{background:#111827;border-color:#111827;color:#fff}
+    .section,.kpi,.summary-panel,.mcard,.modal{border:1px solid var(--line);border-radius:12px;background:#fff;box-shadow:0 2px 6px rgba(0,0,0,.06)}.section{padding:20px}.kpi{padding:20px}.kpi small,.card-title{font-size:14px;color:var(--muted);font-weight:700}.kpi b{font-size:20px;font-weight:600;color:#0f172a}.kpi span{font-size:12px;color:var(--muted)}
+    .skeleton-wrap{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;margin-bottom:14px}.skeleton{height:86px;border-radius:12px;background:linear-gradient(90deg,#eef2f7 25%,#f8fafc 37%,#eef2f7 63%);background-size:400% 100%;animation:skeleton 1.4s ease infinite}@keyframes skeleton{0%{background-position:100% 0}100%{background-position:0 0}}
+    .core-kpis{display:grid;grid-template-columns:1.35fr 1fr 1fr;gap:12px}.core-card{min-height:120px;padding:20px;border:1px solid var(--line);border-radius:12px;background:#fff;box-shadow:0 2px 6px rgba(0,0,0,.06)}.core-card small{display:block;margin-bottom:10px;color:var(--muted);font-size:14px;font-weight:800}.core-card b{display:block;color:#0f172a;font-size:28px;line-height:1.15;font-weight:800}.core-card span{display:block;margin-top:8px;color:var(--muted);font-size:12px}.progress{height:9px;margin-top:14px;overflow:hidden;border-radius:999px;background:#e5e7eb}.progress i{display:block;height:100%;border-radius:999px;background:var(--blue)}.progress.warn i{background:var(--orange)}.progress.danger i{background:var(--red)}
+    #dashboard .dash-shell{gap:12px}#dashboard .dash-top{grid-template-columns:1fr 1fr;gap:12px}.summary-panel{padding:20px}.summary-panel h3{font-size:16px}.mini-metrics{gap:10px}.mini{min-height:62px;padding:10px;border-color:#e5e7eb;border-radius:10px;background:#f9fafb}.mini small{font-size:12px;color:var(--muted)}.mini b{font-size:18px}.mini span{font-size:11px;color:var(--muted)}.dash-widgets,.dash-sites{gap:12px}
+    .tablebox{border-color:var(--line);border-radius:12px}table{font-size:13px}th,td{height:44px;padding:10px 9px;border-bottom:1px solid var(--line);text-align:center}th{top:0;background:#f1f5f9;color:#111827;font-weight:800;text-align:center}th.num{text-align:center}tbody tr:nth-child(even){background:#fbfdff}tbody tr:hover{background:#eff6ff}td.num{text-align:right;font-weight:700;font-variant-numeric:tabular-nums}
+    .badge{border-radius:999px;font-size:12px;font-weight:800}.badge[class*="임대"],.badge[class*="?꾨?"]{background:#dbeafe;color:#1d4ed8;border-color:#93c5fd}.badge[class*="공실"],.badge[class*="怨듭떎"]{background:#ffedd5;color:#c2410c;border-color:#fdba74}.badge[class*="완납"]{background:#dcfce7;color:#166534;border-color:#86efac}.badge[class*="부분납"],.badge[class*="미납"]{background:#fff7ed;color:#c2410c;border-color:#fdba74}.preline{white-space:pre-line}.recv-cell{position:relative;min-width:92px;white-space:normal;line-height:1.3;cursor:pointer;transition:background-color .12s ease, box-shadow .12s ease}.recv-cell:hover{background:#bfdbfe!important;box-shadow:inset 0 0 0 1px #60a5fa}.recv-entry{display:block;padding:2px 0}.recv-entry .date{display:block;color:#64748b;font-size:10px;font-weight:700}.recv-entry .amt{display:block;color:#111827;font-size:11px;font-weight:800}.recv-empty{display:inline-block;min-width:54px;padding:4px 6px;border-radius:6px;background:#fee2e2;color:#b91c1c;font-size:11px;font-weight:800}.recv-total{display:block;color:#111827;font-size:11px;font-weight:800}.recv-sub{display:block;color:#64748b;font-size:10px}.hover-note{position:absolute;left:50%;bottom:calc(100% + 10px);display:none;width:max-content;min-width:220px;max-width:460px;padding:10px 12px;border:1px solid #cbd5e1;border-radius:10px;background:#fff;color:#111827;white-space:pre-wrap;word-break:keep-all;line-height:1.45;text-align:left;box-shadow:0 12px 28px rgba(15,23,42,.16);transform:translateX(-50%);z-index:12}.hover-note:after{content:"";position:absolute;left:50%;top:100%;margin-left:-7px;border-width:7px;border-style:solid;border-color:#fff transparent transparent transparent;filter:drop-shadow(0 1px 0 #cbd5e1)}.recv-cell:hover .hover-note{display:block}[onclick]:hover{transition:background-color .14s ease, box-shadow .14s ease, border-color .14s ease}[onclick].section:hover,[onclick].summary-panel:hover,[onclick].core-card:hover,[onclick].kpi:hover,[onclick].mcard:hover{background:#f8fbff;border-color:#bfdbfe;box-shadow:0 6px 18px rgba(37,99,235,.10)}tr[onclick]:hover,td[onclick]:hover,li[onclick]:hover{background:#eff6ff}
+    .empty{padding:28px;border-color:#cbd5e1;border-radius:12px;background:#f8fafc;color:#6b7280}
+    .calendar{border-radius:12px}.dow{background:#f1f5f9}.day{position:relative;min-height:70px}.today .numday{background:var(--blue);color:#fff}.event{display:none}.event-dot{display:inline-grid;place-items:center;width:9px;height:9px;margin:8px 4px 0 0;border:0;border-radius:999px;background:var(--blue);vertical-align:top}.event-dot:hover{box-shadow:0 0 0 5px rgba(37,99,235,.16)}.event-tag{display:block;width:100%;margin-top:4px;padding:2px 6px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;border:1px solid #bfdbfe;border-radius:6px;background:#eff6ff;color:#1d4ed8;font-size:10px;text-align:left}.event-tag.unpaid{border-color:#fdba74;background:#fff7ed;color:#c2410c}.pay-calendar .day{min-height:88px}.company-filter{position:relative;display:inline-block}.filter-summary{margin-top:6px;color:#6b7280;font-size:12px}.filter-popup{position:absolute;top:0;left:calc(100% + 8px);z-index:20;display:none;width:min(360px,80vw);padding:10px;border:1px solid #d1d5db;border-radius:10px;background:#fff;box-shadow:0 12px 28px rgba(15,23,42,.14)}.filter-popup.open{display:block}.checkgrid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;max-height:180px;overflow:auto}.checkitem{display:flex;align-items:center;gap:8px;font-size:13px;color:#374151}.checkitem input{margin:0}.year-overview{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:10px}.year-month-card{padding:12px;border:1px solid #e5e7eb;border-radius:10px;background:#f9fafb}.year-month-card strong{display:block;font-size:13px;color:#111827}.year-month-card b{display:block;margin-top:6px;font-size:18px;color:#0f172a}.year-month-card span{display:block;margin-top:4px;font-size:11px;color:#6b7280}.pay-state{display:inline-flex;align-items:center;justify-content:center;min-width:78px;padding:4px 6px;border-radius:6px;font-size:11px;font-weight:800}.pay-state.full{background:#dbeafe;color:#1d4ed8}.pay-state.partial{background:#fef3c7;color:#92400e}.pay-state.unpaid{background:#fee2e2;color:#b91c1c}.receivable-toolbar{align-items:flex-start}.receivable-toolbar h3{margin:0}.receivable-filter{display:flex;align-items:center;gap:8px;flex-wrap:wrap;justify-content:flex-end}.receivable-filter .field{width:auto;min-width:158px;max-width:170px}.receivable-filter .sep{color:#9ca3af;font-weight:700}.receivable-filter .checkitem{min-height:38px;margin:0;padding:0 2px;white-space:nowrap}.receivable-row{cursor:pointer}.receivable-row:hover td{background:#eff6ff}
+    .donut{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;color:#0f172a}.donut strong{font-size:24px;line-height:1;font-weight:800}.donut span{font-size:12px;color:var(--muted);font-weight:700}
+    .fill{background:#2563eb}.track{background:#e5e7eb}.field{border-color:#d1d5db;border-radius:8px}.field:focus{border-color:#2563eb;box-shadow:0 0 0 3px rgba(37,99,235,.12)}
+    @media(max-width:1100px){.core-kpis{grid-template-columns:1fr}.skeleton-wrap{grid-template-columns:1fr 1fr}}
+    @media(max-width:760px){header{height:auto;min-height:64px;padding:12px 14px}.layout{display:block}nav{top:0;height:auto;background:#fff}.navbtn{padding:14px 16px;white-space:nowrap}.core-kpis,.dash-top,.skeleton-wrap{grid-template-columns:1fr}main{padding:14px}.section,.kpi,.summary-panel,.core-card{padding:16px}.receivable-toolbar{align-items:stretch}.receivable-filter{justify-content:flex-start}.receivable-filter .field{min-width:0;flex:1 1 150px}}
+  </style>
+</head>
+<body>
+  <header>
+    <div class="brand"><div class="mark">🏢</div><div><h1>자산개발 업무 관리</h1></div></div>
+    <div class="top-actions"><button class="btn primary" onclick="newContract()">신규 계약 등록</button><button class="btn secondary" onclick="openBackupModal()">백업/복구</button></div>
+  </header>
+  <div class="layout">
+    <nav>
+      <button class="navbtn active" data-tab="dashboard"><span>📊</span>대시보드<span class="count" id="cAll">0</span></button>
+      <button class="navbtn" data-tab="assets"><span>🏢</span>자산 관리<span class="count" id="cAsset">0</span></button>
+      <button class="navbtn" data-tab="investments"><span>💼</span>투자/대여 관리<span class="count" id="cInv">0</span></button>
+      <button class="navbtn" data-tab="rent"><span>📄</span>임대 현황<span class="count" id="cRent">0</span></button>
+      <button class="navbtn" data-tab="payments"><span>💳</span>임대료 관리<span class="count" id="cPay">0</span></button>
+      <button class="navbtn" data-tab="calendar"><span>📅</span>캘린더/만기 관리<span class="count" id="cExp">0</span></button>
+      <button class="navbtn" data-tab="stats"><span>📈</span>통계/요약<span class="count" id="cStat">0</span></button>
+      <button class="navbtn" data-tab="settings"><span>⚙️</span>데이터 관리<span class="count">관리</span></button>
+    </nav>
+    <main>
+      <div id="loadingSkeleton" class="skeleton-wrap"><div class="skeleton"></div><div class="skeleton"></div><div class="skeleton"></div></div>
+      <section id="dashboard" class="tab active">
+        <div class="title"><div><h2>대시보드</h2></div><button class="btn warn" onclick="showExpiry(90)">만기 예정 보기</button></div>
+        <div class="dash-shell"><div class="core-kpis" id="coreKpis"></div><div class="dash-top"><div class="summary-panel"><h3>임대 요약</h3><div class="mini-metrics" id="leaseSummary"></div></div><div class="summary-panel"><h3>자산 요약</h3><div class="mini-metrics" id="assetSummary"></div></div></div><div class="grid dash-sites" id="siteCards"></div>
+        <div class="grid dash-widgets"><div class="section"><h3>최근 등록 계약</h3><ul class="list" id="recentList"></ul></div><div class="section"><h3>최근 입금 등록</h3><ul class="list" id="recentPayList"></ul></div><div class="section"><h3>곧 만료되는 계약</h3><ul class="list" id="soonList"></ul></div><div class="section"><h3>당월 미수 TOP 업체</h3><ul class="list" id="topUnpaidList"></ul></div><div class="section"><h3>장기 미수 경고</h3><ul class="list" id="longUnpaidList"></ul></div><div class="section"><h3>공실 미리보기</h3><ul class="list" id="vacPreview"></ul></div></div></div>
+      </section>
+      <section id="rent" class="tab">
+        <div class="title"><div><h2>임대 현황</h2></div><button class="btn primary" onclick="newContract()">추가</button></div>
+        <div class="section"><div class="print-only"><h2>임대 현황</h2></div><div class="tools"><input id="rentQ" class="field" placeholder="사업장, 건물, 임차사, 호실 검색" oninput="renderRent()"><select id="rentStatus" class="field" onchange="renderRent()"><option value="">전체 상태</option><option>임대중</option><option>만기예정</option><option>만기임박</option><option>공실</option><option>계약종료</option></select><select id="rentSite" class="field" onchange="renderRent()"><option value="">전체 사업장</option></select><button class="btn" onclick="openColumnModal()">열 표시 설정</button><button class="btn" onclick="printRentPdf()">PDF 출력</button><button class="btn" onclick="exportRentExcel()">엑셀 출력</button></div><div id="rentSiteSummary" class="grid kpis" style="margin-top:12px"></div><br>
+          <div class="tablebox hide-mobile"><table><thead><tr id="rentHead"></tr></thead><tbody id="rentBody"></tbody><tfoot id="rentFoot"></tfoot></table></div><div class="mobile" id="rentMob"></div></div>
+      </section>
+      <section id="assets" class="tab">
+        <div class="title"><div><h2>자산 관리</h2></div><button class="btn primary" onclick="openAssetForm()">자산 추가</button></div>
+        <div class="section"><div class="tablebox"><table><thead><tr><th>자산유형</th><th>사업장명</th><th>건물명</th><th>주소</th><th>대지면적(㎡)</th><th>건축면적(㎡)</th><th>연면적(㎡)</th><th>건폐율(%)</th><th>용적률(%)</th><th>임대 면적(㎡)</th><th>임대 평형</th><th>취득일</th><th class="num">취득가(원)</th><th>비고</th><th>작업</th></tr></thead><tbody id="assetBody"></tbody></table></div></div>
+      </section>
+      <section id="investments" class="tab">
+        <div class="title"><div><h2>투자 / 대여 관리</h2></div><button class="btn primary" onclick="openInvestmentForm()">추가</button></div>
+        <div class="section"><div class="tablebox"><table><thead><tr><th>구분</th><th>업체</th><th>대표</th><th>주소</th><th>주요 내용</th><th class="num">투자금(대여금)</th><th>계약기간</th><th>비고</th><th>작업</th></tr></thead><tbody id="investmentBody"></tbody></table></div></div>
+      </section>
+      <section id="vacancy" class="tab">
+        <div class="title"><div><h2>공실 현황</h2><p class="muted">공실 항목만 자동 집계하고 장기 공실을 표시합니다.</p></div><button class="btn primary" onclick="newVacancy()">공실 등록</button></div>
+        <div class="section"><div class="tools"><input id="vacQ" class="field" placeholder="사업장, 건물, 호실 검색" oninput="renderVacancy()"></div><br><div class="grid kpis" id="vacKpi"></div><br>
+          <div class="tablebox hide-mobile"><table><thead><tr><th>사업장</th><th>건물</th><th>동</th><th>층</th><th>호실/구역</th><th class="num">면적</th><th class="num">평형</th><th class="num">예상 보증금</th><th class="num">예상 임대료</th><th>공실 시작일</th><th>공실 기간</th><th>경고</th><th>비고</th><th>작업</th></tr></thead><tbody id="vacBody"></tbody><tfoot id="vacFoot"></tfoot></table></div><div class="mobile" id="vacMob"></div></div>
+      </section>
+      <section id="contract" class="tab">
+        <div class="title"><div><h2>계약 관리</h2><p class="muted">신규 등록, 수정, 삭제, 동일 호실 중복 경고를 처리합니다.</p></div><button class="btn" onclick="resetForm()">입력 초기화</button></div>
+        <div class="section"><form id="form" onsubmit="saveRecord(event)"><input type="hidden" id="id"><h3>위치 정보</h3><div class="form"><div class="full"><label>자산 선택</label><select id="assetId" class="field" onchange="applyAssetSelection()"><option value="">직접 입력</option></select></div>
+          <div><label>사업장명 *</label><input id="siteName" class="field" required></div><div><label>건물명 *</label><input id="buildingName" class="field" required></div><div><label>동</label><input id="dong" class="field"></div><div><label>층 *</label><input id="floor" class="field" required></div><div><label>호실/구역 *</label><input id="unitName" class="field" required></div><div><label>임대 구간명</label><input id="leaseSection" class="field"></div><div><label>면적(㎡) *</label><input id="areaM2" class="field" required inputmode="decimal" oninput="autoPyeong()"></div><div><label>평형</label><input id="pyeong" class="field" inputmode="decimal"></div></div>
+          <h3 style="margin-top:18px">임차인 및 계약 정보</h3><div class="form"><div><label>임차사명</label><input id="tenantName" class="field"></div><div><label>사업자번호(선택)</label><input id="businessNumber" class="field"></div><div><label>담당자명</label><input id="managerName" class="field"></div><div><label>연락처</label><input id="phone" class="field"></div><div><label>보증금</label><input id="deposit" class="field" inputmode="numeric" oninput="moneyInput(this)"></div><div><label>월 임대료</label><input id="monthlyRent" class="field" inputmode="numeric" oninput="moneyInput(this)"></div><div><label>관리비</label><input id="maintenanceFee" class="field" inputmode="numeric" oninput="moneyInput(this)"></div><div><label>자동 갱신 여부</label><select id="autoRenew" class="field"><option>아니오</option><option>예</option></select></div><div><label>계약시작일</label><input id="startDate" class="field" type="date"></div><div><label>계약종료일</label><input id="endDate" class="field" type="date" oninput="remainHint()"></div><div><label>계약상태 *</label><select id="manualStatus" class="field" required onchange="vacancyDefault()"><option>임대중</option><option>공실</option><option>계약종료</option></select></div><div><label>공실 시작일</label><input id="vacancyStartDate" class="field" type="date"></div><div class="full"><label>비고</label><textarea id="memo" class="field"></textarea></div></div><p class="muted" id="hint">잔여일: -</p><div class="sticky-actions"><button class="btn" type="button" onclick="resetForm()">새 입력</button><button class="btn danger" id="delBtn" type="button" onclick="deleteCurrent()" style="display:none">삭제</button><button class="btn primary" type="submit">저장</button></div></form></div>
+      </section>
+      <section id="calendar" class="tab">
+        <div class="title"><div><h2>캘린더 / 만기 관리</h2></div><div class="tools"><button class="btn exp-filter" onclick="showExpiry(30)">30일 이내</button><button class="btn exp-filter" onclick="showExpiry(60)">60일 이내</button><button class="btn exp-filter" onclick="showExpiry(90)">90일 이내</button></div></div>
+        <div class="expiry-layout"><div class="section compact-calendar"><div class="cal-head"><button class="btn small" onclick="moveMonth(-1)">이전 달</button><h3 id="calTitle"></h3><button class="btn small" onclick="moveMonth(1)">다음 달</button></div><div class="calendar" id="calGrid"></div></div><div class="section"><div class="tools" style="justify-content:space-between"><h3>만기 임박 계약 리스트</h3><select id="expRange" class="field" onchange="changeExpiryRange()"><option value="30">30일 이내</option><option value="60">60일 이내</option><option value="90" selected>90일 이내</option><option value="365">1년 이내</option></select></div><div class="tablebox hide-mobile"><table><thead><tr><th>갱신 필요</th><th>사업장</th><th>건물</th><th>호실</th><th>임차사</th><th>종료일</th><th>잔여일</th><th>상태</th><th>작업</th></tr></thead><tbody id="expBody"></tbody></table></div><div class="mobile" id="expMob"></div></div></div>
+      </section>
+      <section id="payments" class="tab"><div class="title"><div><h2>임대료 관리</h2></div><button class="btn primary" onclick="openPaymentModal()">입금 등록</button></div><div class="section" style="margin-top:12px"><div class="tools" style="justify-content:space-between"><h3>연간 월별 임대료 현황</h3><select id="payYear" class="field" style="max-width:140px" onchange="renderPayments()"></select></div><div id="payYearOverview" class="year-overview" style="margin-top:12px"></div></div><div class="grid cols" style="margin-top:12px"><div class="section compact-calendar pay-calendar"><div class="tools" style="justify-content:space-between"><h3>월 고정 납입 캘린더</h3><div class="row"><select id="payMonthSelect" class="field" style="min-width:120px" onchange="renderPayments()"></select></div></div><div style="margin-top:12px"><label>업체 선택</label><div class="company-filter"><button class="btn secondary" type="button" onclick="togglePayCompanyPopup()">업체 선택</button><div id="payCompanyPopup" class="filter-popup"><div id="payCompanyChecks" class="checkgrid"></div></div><div id="payCompanySummary" class="filter-summary">전체 회사</div></div></div><div class="cal-head" style="margin-top:12px"><button class="btn small" onclick="movePayMonth(-1)">이전 달</button><h3 id="payTitle"></h3><button class="btn small" onclick="movePayMonth(1)">다음 달</button></div><div class="calendar" id="payGrid"></div></div><div class="grid" style="gap:12px"><div class="section"><h3>월별 미납 현황</h3><div id="payMonthSummary"></div></div><div class="section"><h3>전체 미납 현황</h3><ul class="list" id="payOverallUnpaid"></ul></div></div></div><div class="section" style="margin-top:12px"><div class="tools receivable-toolbar" style="justify-content:space-between"><h3>미수금 현황</h3><div class="receivable-filter"><input id="arFrom" class="field" type="month" onchange="renderPayments()"><span class="sep">~</span><input id="arTo" class="field" type="month" onchange="renderPayments()"><label class="checkitem"><input id="payArShowContract" type="checkbox" checked onchange="renderPayments()"> 계약 내용 표시</label><button class="btn" type="button" onclick="printReceivablePdf()">PDF 출력</button><button class="btn" type="button" onclick="exportReceivableExcel()">엑셀 출력</button></div></div><div class="muted" id="payReceivableCaption" style="margin-top:6px"></div><div class="tablebox hide-mobile"><table><thead id="payArHead"></thead><tbody id="payArBody"></tbody><tfoot id="payArFoot"></tfoot></table></div></div><div class="section" style="margin-top:12px"><div class="tools" style="justify-content:space-between"><h3>회사별 입금 현황</h3><span class="muted">계약 시작일의 일자를 월 고정 납입일로 계산합니다.</span></div><div class="tablebox hide-mobile"><table><thead><tr><th>회사명</th><th>사업장</th><th>호실/구역</th><th>납입 예정일</th><th class="num">청구금액(원)</th><th>입금일</th><th class="num">입금금액(원)</th><th class="num">미납금액(원)</th><th>상태</th><th>작업</th></tr></thead><tbody id="payBody"></tbody></table></div><div class="mobile" id="payMob"></div></div></section>
+      <section id="stats" class="tab"><div class="title"><div><h2>통계 / 요약</h2></div></div><div class="grid kpis" id="statKpi"></div><div class="grid cols"><div class="section"><h3>사업장별 임대율</h3><div id="siteChart"></div></div><div class="section"><h3>공실률</h3><div class="donut" id="donut">0%</div><div id="statusChart"></div></div></div><div class="grid cols"><div class="section"><h3>건물별 임대료 합계</h3><div id="buildingChart"></div></div><div class="section"><h3>월별 만기 예정 건수</h3><div id="monthChart"></div></div></div></section>
+      <section id="settings" class="tab"><div class="title"><div><h2>데이터 관리</h2></div><button class="btn primary" onclick="openBackupModal()">백업/복구</button></div><div class="section"><div class="tools" style="justify-content:space-between"><h3>저장 상태</h3><button class="btn" type="button" onclick="createRestorePoint()">현재 시점 저장</button></div><div id="storage"></div></div><div class="section"><div class="tools" style="justify-content:space-between"><h3>시점 복구</h3><span class="muted">앱 내부에 저장된 복원 지점으로 되돌립니다.</span></div><div id="restorePoints" style="margin-top:12px"></div></div></section>
+    </main>
+  </div>
+  <div class="modal-bg" id="modalBg" onclick="if(event.target.id==='modalBg')closeModal()"><div class="modal"><div class="modal-head"><h3 id="modalTitle">상세 정보</h3><button class="btn small" onclick="closeModal()">닫기</button></div><div class="modal-body" id="modalBody"></div></div></div>
+  <div id="formParking" style="display:none"></div>
+  <div class="toast" id="toast"></div>
+  <script>
+    /* ===== JS 1: 데이터 저장, 공통 계산, 대시보드/표 렌더링 ===== */
+    var KEY="realEstateLeaseManager.records.v1", ASSET_KEY="realEstateLeaseManager.assets.v1", INV_KEY="realEstateLeaseManager.investments.v1", PAY_KEY="realEstateLeaseManager.payments.v1", COL_KEY="realEstateLeaseManager.hiddenColumns.v1", SNAP_KEY="realEstateLeaseManager.restorePoints.v1", records=[], assets=[], investments=[], payments=[], hiddenCols={}, restorePoints=[], sort={key:"siteName",dir:"asc"}, cal=new Date(), payCal=new Date(), expiryFilterDays=90, paymentDraftMode="default"; cal.setDate(1); payCal.setDate(1);
+    var cols=[
+      ["category","구분"],["no","No"],["siteName","사업장명"],["buildingName","건물명"],["address","주소"],["dong","동"],["floor","층"],["unitName","호실/구역명"],["leaseSection","임대 구간"],["areaM2","면적(㎡)"],["pyeong","평형"],["tenantName","임차사"],["status","계약상태"],["deposit","보증금(원)",1],["monthlyRent","월 임대료(원)",1],["maintenanceFee","관리비(원)",1],["startDate","계약시작일"],["endDate","계약종료일"],["remain","잔여일"],["memo","비고"]
+    ];
+    document.addEventListener("DOMContentLoaded",function(){try{load();if(!records.length)loadSample(false);bindTabs();parkFormHome();resetForm();renderAll();ensureDailyRestorePoint();document.addEventListener("click",handleOutsidePayCompanyPopup)}catch(e){console.error(e);alert("초기 로딩 중 오류가 발생했습니다.\n"+e.message)}finally{var sk=document.getElementById("loadingSkeleton");if(sk)sk.style.display="none"}});
+
+    function bindTabs(){document.querySelectorAll(".navbtn").forEach(function(b){b.onclick=function(){tab(b.dataset.tab)}})}
+    function tab(id){document.querySelectorAll(".navbtn").forEach(function(b){b.classList.toggle("active",b.dataset.tab===id)});document.querySelectorAll(".tab").forEach(function(p){p.classList.toggle("active",p.id===id)});if(id==="calendar"){renderCalendar();renderExpiry()}if(id==="payments")renderPayments();if(id==="stats")renderStats()}
+    function load(){
+      try{records=JSON.parse(localStorage.getItem(KEY)||"[]");if(!Array.isArray(records))records=[];records=records.map(norm)}catch(e){records=[]}
+      try{assets=JSON.parse(localStorage.getItem(ASSET_KEY)||"[]");if(!Array.isArray(assets))assets=[];assets=assets.map(normAsset)}catch(e){assets=[]}
+      try{investments=JSON.parse(localStorage.getItem(INV_KEY)||"[]");if(!Array.isArray(investments))investments=[];investments=investments.map(normInvestment)}catch(e){investments=[]}
+      try{payments=JSON.parse(localStorage.getItem(PAY_KEY)||"[]");if(!Array.isArray(payments))payments=[];payments=payments.map(normPayment)}catch(e){payments=[]}
+      try{hiddenCols=JSON.parse(localStorage.getItem(COL_KEY)||"{}")||{}}catch(e){hiddenCols={}}
+      try{restorePoints=JSON.parse(localStorage.getItem(SNAP_KEY)||"[]");if(!Array.isArray(restorePoints))restorePoints=[]}catch(e){restorePoints=[]}
+    }
+    function persistStorage(){localStorage.setItem(KEY,JSON.stringify(records));localStorage.setItem(ASSET_KEY,JSON.stringify(assets));localStorage.setItem(INV_KEY,JSON.stringify(investments));localStorage.setItem(PAY_KEY,JSON.stringify(payments));localStorage.setItem(COL_KEY,JSON.stringify(hiddenCols));localStorage.setItem(SNAP_KEY,JSON.stringify(restorePoints));renderStorage()}
+    function save(){persistStorage();ensureDailyRestorePoint()}
+    function renderAll(){ensureAssetsFromRecords();assetOptions();siteFilter();renderDash();renderRent();renderVacancy();renderAssets();renderInvestments();renderCalendar();renderExpiry();renderPayments();renderStats();counts();renderStorage();renderRestorePoints()}
+    function makeId(){return"REC-"+Date.now().toString(36)+"-"+Math.random().toString(36).slice(2,8)}
+    function today(){var d=new Date();return new Date(d.getFullYear(),d.getMonth(),d.getDate())}
+    function dateStr(d){return d?d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0"):""}
+    function monthStr(d){return d?d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0"):""}
+    function shift(n){var d=today();d.setDate(d.getDate()+n);return dateStr(d)}
+    function parse(v){if(!v)return null;var p=v.split("-");return p.length===3?new Date(+p[0],+p[1]-1,+p[2]):null}
+    function num(v){return Number(String(v||"").replace(/,/g,""))||0}
+    function won(v){return num(v).toLocaleString("ko-KR")}
+    function shortWon(v){v=num(v);if(v>=100000000)return (Math.round(v/10000000)/10).toLocaleString("ko-KR")+"억";if(v>=10000)return Math.round(v/10000).toLocaleString("ko-KR")+"만";return won(v)}
+    function one(v){return (Math.round(num(v)*10)/10).toLocaleString("ko-KR",{maximumFractionDigits:1})}
+    function py(m){return Math.round((num(m)/3.3058)*10)/10}
+    function esc(v){return String(v==null?"":v).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;").replace(/'/g,"&#039;")}
+    function remain(r){var e=parse(r.endDate);return e?Math.ceil((e-today())/86400000):null}
+    function status(r){if(r.manualStatus==="공실")return"공실";var d=remain(r);if(d!==null&&d<0)return"계약종료";if(r.manualStatus==="계약종료")return"계약종료";if(d!==null&&d<=30)return"만기임박";if(d!==null&&d<=90)return"만기예정";return"임대중"}
+    function badge(s){return'<span class="badge '+s+'">'+esc(s)+'</span>'}
+    function remText(d){return d==null?"-":d<0?d+"일 종료":d+"일"}
+    function total(list){return list.reduce(function(a,r){a.area+=num(r.areaM2);a.py+=num(r.pyeong||py(r.areaM2));a.dep+=num(r.deposit);a.rent+=num(r.monthlyRent);a.fee+=num(r.maintenanceFee);return a},{area:0,py:0,dep:0,rent:0,fee:0})}
+    function group(list,key){return list.reduce(function(a,r){var k=r[key]||"미지정";(a[k]=a[k]||[]).push(r);return a},{})}
+    function findRid(rid){return records.find(function(r){return r.id===rid})}
+    function expWithin(n){return records.filter(function(r){var d=remain(r);return status(r)!=="공실"&&d!==null&&d>=0&&d<=n}).length}
+    function findAsset(aid){return assets.find(function(a){return a.id===aid})}
+    function assetForRecord(r){return findAsset(r.assetId)||assets.find(function(a){return a.siteName===r.siteName&&a.buildingName===r.buildingName})||{}}
+    function dashboardOpenRent(site,statusFilter,q){tab("rent");if(window.rentQ)rentQ.value=q||"";if(window.rentStatus)rentStatus.value=statusFilter||"";if(window.rentSite)rentSite.value=site||"";renderRent()}
+    function applyPaymentCompanySelection(names){var picked=[].concat(names||[]).filter(Boolean);paymentCompanyOptions();document.querySelectorAll('input[name="payCompanyFilter"]').forEach(function(el){el.checked=!picked.length||picked.indexOf(el.value)>-1});syncPayCompanyAllState();updatePayCompanySummary()}
+    function dashboardOpenPayments(opts){opts=opts||{};tab("payments");if(opts.month){var b=monthBounds(opts.month);if(window.payYear)payYear.value=String(b.year);if(window.payMonthSelect)payMonthSelect.value=String(b.monthIndex+1)}if(opts.companyNames)applyPaymentCompanySelection(opts.companyNames);renderPayments();if(opts.recordId)openPaymentModal(opts.recordId,opts.month||currentPaymentMonth())}
+    function dashboardOpenExpiry(days,rid){expiryFilterDays=days||90;tab("calendar");if(window.expRange)expRange.value=String(expiryFilterDays);renderCalendar();renderExpiry();if(rid)openModal(rid)}
+    function monthlyPaymentSummary(month){var rows=paymentRows(month);return{rows:rows,due:rows.reduce(function(a,x){return a+x.due},0),paid:rows.reduce(function(a,x){return a+x.paid},0),unpaid:rows.reduce(function(a,x){return a+x.unpaid},0),unpaidCount:rows.filter(function(x){return x.unpaid>0}).length,paidCount:rows.filter(function(x){return x.unpaid<=0}).length}}
+    function arrearsByRecord(monthsBack){var map={};for(var i=0;i<monthsBack;i++){var key=monthStr(new Date(today().getFullYear(),today().getMonth()-i,1));paymentRows(key).forEach(function(x){if(x.unpaid<=0)return;var cur=map[x.record.id]||(map[x.record.id]={record:x.record,total:0,months:0,lastMonth:key});cur.total+=x.unpaid;cur.months++;if(key>cur.lastMonth)cur.lastMonth=key;map[x.record.id]=cur;});}return Object.keys(map).map(function(k){return map[k]}).sort(function(a,b){return b.total-a.total})}
+    function ensureAssetsFromRecords(){if(assets.length)return;var seen={};records.forEach(function(r){var k=(r.siteName||"")+"|"+(r.buildingName||"");if(!r.siteName||seen[k])return;seen[k]=1;assets.push({id:makeId(),assetType:"건물",siteName:r.siteName,buildingName:r.buildingName,address:r.address||"",landAreaM2:0,buildingAreaM2:0,grossFloorAreaM2:0,areaM2:0,pyeong:0,acquiredDate:"",acquisitionPrice:0,memo:"기존 임대 현황에서 자동 생성"})});linkRecordsToAssets()}
+    function linkRecordsToAssets(){records.forEach(function(r){var a=assetForRecord(r);if(a.id){r.assetId=r.assetId||a.id;r.address=r.address||a.address||""}})}
+    function assetOptions(){var s=document.getElementById("assetId");if(!s)return;var cur=s.value;s.innerHTML='<option value="">직접 입력</option>'+assets.map(function(a){return'<option value="'+esc(a.id)+'">'+esc(a.siteName+' / '+a.buildingName+' / '+(a.address||"주소 미입력"))+'</option>'}).join("");s.value=cur}
+    function applyAssetSelection(){var a=findAsset(assetId.value);if(!a)return;siteName.value=a.siteName||"";buildingName.value=a.buildingName||""}
+
+    function sample(){
+      return [
+        {id:"REC-jinwi-002",assetId:"REC-mnsn4qz8-9kc8it",address:"평택시 진위면 가곡리 128-6 외 6필지",createdAt:"2026-04-10",category:"사무",siteName:"진위사업장",buildingName:"진위사업장",dong:"라동(B동), 가동(A동)",floor:"1~4층",unitName:"라동(B동)1~4층 일부, 가동(A동) 1층 일부",leaseSection:"라동(B동)1~4층 일부, 가동(A동) 1층 일부",areaM2:6016.5,pyeong:1820,tenantName:"솔라루체",businessNumber:"",managerName:"",phone:"",deposit:310000000,monthlyRent:31850000,maintenanceFee:0,startDate:"2025-10-15",endDate:"2026-10-14",autoRenew:"아니오",manualStatus:"임대중",vacancyStartDate:"",renewalNeeded:false,memo:"",priorReceivable:0,priorReceivableMemo:""},
+        {id:"REC-jinwi-003",createdAt:"2026-04-10",category:"진위사업장",siteName:"진위사업장",buildingName:"진위사업장",dong:"가동(A동)",floor:"2층",unitName:"가동(A동) 2층 전체",leaseSection:"가동(A동) 2층 전체",areaM2:1276,pyeong:386,tenantName:"이에스텍디에프",businessNumber:"",managerName:"",phone:"",deposit:96500000,monthlyRent:9650000,maintenanceFee:0,startDate:"2025-10-15",endDate:"2026-10-14",autoRenew:"아니오",manualStatus:"임대중",vacancyStartDate:"",renewalNeeded:false,memo:"",assetId:"REC-mnsn4qz8-9kc8it",address:"평택시 진위면 가곡리 128-6 외 6필지",priorReceivable:48250000,priorReceivableMemo:"'25.6~10 5개월 체납"},
+        {id:"REC-jinwi-004",createdAt:"2026-04-10",category:"진위사업장",siteName:"진위사업장",buildingName:"진위사업장",dong:"라동(B동)",floor:"4층",unitName:"라동(B동) 4층 일부",leaseSection:"라동(B동) 4층 일부",areaM2:1322.3,pyeong:400,tenantName:"지엔디",businessNumber:"",managerName:"",phone:"",deposit:100000000,monthlyRent:10000000,maintenanceFee:0,startDate:"2025-10-15",endDate:"2026-10-14",autoRenew:"아니오",manualStatus:"임대중",vacancyStartDate:"",renewalNeeded:false,memo:"",assetId:"REC-mnsn4qz8-9kc8it",address:"평택시 진위면 가곡리 128-6 외 6필지",priorReceivable:50000000,priorReceivableMemo:"'25.6~10 5개월 체납"},
+        {id:"REC-jinwi-005",createdAt:"2026-04-10",category:"진위사업장",siteName:"진위사업장",buildingName:"진위사업장",dong:"C동",floor:"1~2층",unitName:"C동1~2층 일부",leaseSection:"C동1~2층 일부",areaM2:396.6,pyeong:120,tenantName:"와이엔티에스글로벌",businessNumber:"",managerName:"",phone:"",deposit:30000000,monthlyRent:3000000,maintenanceFee:0,startDate:"2025-10-15",endDate:"2026-10-14",autoRenew:"아니오",manualStatus:"임대중",vacancyStartDate:"",renewalNeeded:false,memo:"",assetId:"REC-mnsn4qz8-9kc8it",address:"평택시 진위면 가곡리 128-6 외 6필지",priorReceivable:5587500,priorReceivableMemo:"'25.6~10 5개월 체납\n가동(A동) 1층 계약 만기 종료 보증금 상계 처리\n(기존 체납 15,487,500원 → 상계처리 후 5,578,500원)"},
+        {id:"REC-jinwi-006",assetId:"REC-mnsn4qz8-9kc8it",address:"평택시 진위면 가곡리 128-6 외 6필지",createdAt:"2026-04-10",category:"사무",siteName:"진위사업장",buildingName:"진위사업장",dong:"가동(A동)",floor:"1층",unitName:"가동(A동) 1층 일부 공실구역",leaseSection:"가동(A동) 1층 일부(공실)",areaM2:320.6,pyeong:97,tenantName:"",businessNumber:"",managerName:"",phone:"",deposit:0,monthlyRent:0,maintenanceFee:0,startDate:"",endDate:"",autoRenew:"아니오",manualStatus:"공실",vacancyStartDate:"2026-04-10",renewalNeeded:false,memo:"",priorReceivable:0,priorReceivableMemo:""},
+        {id:"REC-jinwi-007",createdAt:"2026-04-10",category:"진위사업장",siteName:"진위사업장",buildingName:"진위사업장",dong:"가동(A동)",floor:"2층",unitName:"가동(A동) 2층 일부",leaseSection:"가동(A동) 2층 일부",areaM2:211.6,pyeong:64,tenantName:"글로벌테크놀로지",businessNumber:"",managerName:"",phone:"",deposit:16000000,monthlyRent:1600000,maintenanceFee:0,startDate:"2025-10-15",endDate:"2026-10-14",autoRenew:"아니오",manualStatus:"임대중",vacancyStartDate:"",renewalNeeded:false,memo:"",assetId:"REC-mnsn4qz8-9kc8it",address:"평택시 진위면 가곡리 128-6 외 6필지",priorReceivable:0,priorReceivableMemo:""},
+        {id:"REC-jinwi-008",createdAt:"2026-04-10",category:"진위사업장",siteName:"진위사업장",buildingName:"진위사업장",dong:"가동(A동)",floor:"1층",unitName:"가동(A동) 1층 일부 임대구역",leaseSection:"가동(A동) 1층 일부",areaM2:175.2,pyeong:53,tenantName:"글로벌테크놀로지",businessNumber:"",managerName:"",phone:"",deposit:13250000,monthlyRent:1325000,maintenanceFee:0,startDate:"2025-01-15",endDate:"2026-10-14",autoRenew:"아니오",manualStatus:"임대중",vacancyStartDate:"",renewalNeeded:false,memo:"",assetId:"REC-mnsn4qz8-9kc8it",address:"평택시 진위면 가곡리 128-6 외 6필지",priorReceivable:0,priorReceivableMemo:""}
+      ]
+    }
+    function sampleAssets(){return[{id:"REC-mnsn4qz8-9kc8it",assetType:"건물+토지",siteName:"진위사업장",buildingName:"진위사업장",address:"평택시 진위면 가곡리 128-6 외 6필지",landAreaM2:9768,buildingAreaM2:3614.84,grossFloorAreaM2:9688.24,areaM2:10278.5,pyeong:3112,acquiredDate:"2019-04-01",memo:"솔라루체 외 4개사",acquisitionPrice:12100000000,buildingCoverageRatio:37,floorAreaRatio:99.2},{id:"REC-mnxzgb6e-tpgeq7",assetType:"토지",siteName:"수원 고등지구",buildingName:"수원 고등지구",address:"수원시 팔달구 고등동 336-2",landAreaM2:1077,buildingAreaM2:0,grossFloorAreaM2:0,areaM2:0,pyeong:0,acquiredDate:"2024-07-19",acquisitionPrice:6740000000,memo:"3년 연부취득, 잔금 '27-07-19",buildingCoverageRatio:0,floorAreaRatio:0}]}
+    function sampleInvestments(){return[{id:"REC-mny0fg29-7v6r48",type:"투자",name:"사일런트인버트",representative:"김정익",address:"서울시 강서구 가양동 449-12번지 마스터밸류 에이스지식산업센터",content:"지식산업센터 개발사업 투자",amount:600000000,contractStart:"2020-10-16",contractEnd:"2025-10-15",memo:"투자 계약 만료.\n- '26.01.23 소송 진행 품의\n- '26.01.26 소송 대리인 선임 품의(법무법인 청목)\n- '26.02.10 소장 접수(서울중앙지방법원 2026가합3916)\n- '26.04.06 폐문부재로 소장 미송달, 집행관 직접 송달 예정"},{id:"REC-mny1aoyj-pgpbk7",type:"대여금",name:"우리농장",representative:"이명섭",address:"충남 공주시 계룡면 선비로 1593",content:"양계사업 대여금",amount:43000000,contractStart:"2021-05-03",contractEnd:"2024-12-31",memo:"- '24.10 부터 원금 및 이자 미상환\n- '25.06.26 우리농장 방문 및 채무자 협의\n- '25.07.15 채권 회수 지급명령 절차 진행 품의\n- '26.02.06 채권추심 업체 의뢰(고려신용정보)\n- '25.09.26 지급명령결정 판결\n'25.12.11 우리농장 소유 부동산 강제 집행 진행 중.(근저당 약 6억원)"}]}
+    function samplePayments(){return[{recordId:"REC-jinwi-002",month:"2025-10",paidDate:"2025-11-28",amount:31850000,memo:"",id:"PAY-mny5w7o7-tzo3"},{recordId:"REC-jinwi-002",month:"2025-11",paidDate:"2025-12-26",amount:31850000,memo:"",id:"PAY-mny5wmxh-y5mc"},{recordId:"REC-jinwi-002",month:"2025-12",paidDate:"2026-01-26",amount:31850000,memo:"",id:"PAY-mny5y7om-xdeh"},{recordId:"REC-jinwi-002",month:"2026-01",paidDate:"2026-02-25",amount:31850000,memo:"",id:"PAY-mny5yt05-4kx8"},{recordId:"REC-jinwi-002",month:"2026-02",paidDate:"2026-03-25",amount:31850000,memo:"",id:"PAY-mny5zkqz-3qvb"},{recordId:"REC-jinwi-003",month:"2025-10",paidDate:"2025-11-28",amount:9650000,memo:"",id:"PAY-mny613db-ca5a"},{recordId:"REC-jinwi-003",month:"2025-11",paidDate:"2026-01-12",amount:9650000,memo:"",id:"PAY-mny620ys-k5i1"},{recordId:"REC-jinwi-003",month:"2025-12",paidDate:"2026-02-27",amount:9650000,memo:"",id:"PAY-mny62dfd-imom"},{recordId:"REC-jinwi-003",month:"2026-01",paidDate:"2026-02-27",amount:9650000,memo:"",id:"PAY-mny62iu5-zi17"},{recordId:"REC-jinwi-004",month:"2025-10",paidDate:"2025-11-28",amount:10000000,memo:"",id:"PAY-mny64lcz-hee4"},{recordId:"REC-jinwi-004",month:"2025-11",paidDate:"2026-01-12",amount:10000000,memo:"",id:"PAY-mny64ryl-0af3"},{recordId:"REC-jinwi-004",month:"2025-12",paidDate:"2026-02-27",amount:10000000,memo:"",id:"PAY-mny6554f-0l1a"},{recordId:"REC-jinwi-004",month:"2026-01",paidDate:"2026-02-27",amount:10000000,memo:"",id:"PAY-mny658uf-5if4"},{recordId:"REC-jinwi-005",month:"2025-10",paidDate:"2025-11-28",amount:3000000,memo:"",id:"PAY-mny65qiz-w9rs"},{recordId:"REC-jinwi-005",month:"2025-11",paidDate:"2026-01-12",amount:3000000,memo:"",id:"PAY-mny66doz-vmt8"},{recordId:"REC-jinwi-005",month:"2025-12",paidDate:"2026-02-27",amount:3000000,memo:"",id:"PAY-mny66jrx-jhz5"},{recordId:"REC-jinwi-005",month:"2026-01",paidDate:"2026-02-27",amount:3000000,memo:"",id:"PAY-mny66odx-yvol"},{recordId:"REC-jinwi-007",month:"2025-11",paidDate:"2025-11-28",amount:1600000,memo:"",id:"PAY-mny68p1f-8khd"},{recordId:"REC-jinwi-007",month:"2025-12",paidDate:"2025-12-24",amount:1600000,memo:"",id:"PAY-mny68vdb-tfv5"},{recordId:"REC-jinwi-007",month:"2026-01",paidDate:"2026-01-26",amount:1600000,memo:"",id:"PAY-mny6bh79-zpfb"},{recordId:"REC-jinwi-007",month:"2026-02",paidDate:"2026-02-25",amount:1600000,memo:"",id:"PAY-mny6bmbf-n17q"},{recordId:"REC-jinwi-007",month:"2026-03",paidDate:"2026-03-25",amount:1600000,memo:"",id:"PAY-mny6brpp-44my"},{recordId:"REC-jinwi-008",month:"2025-11",paidDate:"2025-11-28",amount:1325000,memo:"",id:"PAY-mny6c4vr-w034"},{recordId:"REC-jinwi-008",month:"2025-12",paidDate:"2025-12-24",amount:1325000,memo:"",id:"PAY-mny6cmb3-ugia"},{recordId:"REC-jinwi-008",month:"2026-01",paidDate:"2026-01-26",amount:1325000,memo:"",id:"PAY-mny6cr49-mqfx"},{recordId:"REC-jinwi-008",month:"2026-02",paidDate:"2026-02-25",amount:1325000,memo:"",id:"PAY-mny6ctij-ye7n"},{recordId:"REC-jinwi-008",month:"2026-03",paidDate:"2026-03-25",amount:1325000,memo:"",id:"PAY-mny6d2oz-3883"},{recordId:"REC-jinwi-007",month:"2025-10",paidDate:"2025-10-27",amount:1600000,memo:"",id:"PAY-mny73js2-oa78"},{recordId:"REC-jinwi-008",month:"2025-10",paidDate:"2025-10-27",amount:1325000,memo:"",id:"PAY-mny73r6q-1uqi"}]}
+    function sampleHiddenColumns(){return{category:true,buildingName:true,address:true,leaseSection:false,unitName:true}}
+    function loadSample(ask){if(ask&&!confirm("현재 데이터를 샘플 데이터로 교체하시겠습니까?"))return;records=sample();assets=sampleAssets();investments=sampleInvestments();payments=samplePayments();hiddenCols=sampleHiddenColumns();linkRecordsToAssets();save();renderAll();closeModal();toast("샘플데이터를 불러왔습니다.")}
+    function clearData(){if(!confirm("전체 데이터를 삭제하시겠습니까? 이 작업은 되돌릴 수 없습니다."))return;records=[];assets=[];investments=[];payments=[];save();renderAll();resetForm();closeModal();toast("전체 데이터가 삭제되었습니다.")}
+    function resetApp(){if(!confirm("초기화하면 현재 저장 데이터가 삭제되고 기본 샘플 데이터로 다시 시작합니다. 진행하시겠습니까?"))return;localStorage.removeItem(KEY);localStorage.removeItem(ASSET_KEY);localStorage.removeItem(INV_KEY);localStorage.removeItem(PAY_KEY);records=sample();assets=sampleAssets();investments=sampleInvestments();payments=samplePayments();hiddenCols=sampleHiddenColumns();linkRecordsToAssets();save();renderAll();resetForm();closeModal();tab("dashboard");toast("초기화가 완료되었습니다.")}
+    function nowIso(){return new Date().toISOString()}
+    function formatDateTime(iso){var d=new Date(iso);if(isNaN(d))return iso||"-";return d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0")+" "+String(d.getHours()).padStart(2,"0")+":"+String(d.getMinutes()).padStart(2,"0")}
+    function restorePointMetaLabel(point){return point.kind==="daily"?(point.dayKey||point.label||"일별 자동 저장"):(point.label||"복원 지점")}
+    function pruneRestorePoints(){
+      var manual=restorePoints.filter(function(p){return p.kind!=="daily";}).slice(0,20);
+      var daily=restorePoints.filter(function(p){return p.kind==="daily";}).slice(0,14);
+      restorePoints=manual.concat(daily).sort(function(a,b){return String(b.createdAt||"").localeCompare(String(a.createdAt||""))});
+    }
+    function createRestorePoint(label,opts){
+      opts=opts||{};
+      var created=nowIso(), snapshot={id:"SNAP-"+Date.now().toString(36),createdAt:created,label:label||(opts.kind==="daily"?dateStr(today())+" 자동 저장":"수동 저장 "+formatDateTime(created)),kind:opts.kind||"manual",dayKey:opts.dayKey||"",data:backupPayload()};
+      restorePoints.unshift(snapshot);
+      pruneRestorePoints();
+      persistStorage();
+      renderRestorePoints();
+      if(!opts.silent)toast(snapshot.kind==="daily"?"오늘 날짜 기준 자동 복원 지점을 저장했습니다.":"현재 시점을 복원 지점으로 저장했습니다.");
+      return snapshot;
+    }
+    function ensureDailyRestorePoint(){
+      var key=dateStr(today());
+      if(restorePoints.some(function(p){return p.kind==="daily"&&p.dayKey===key;}))return;
+      createRestorePoint(key+" 자동 저장",{kind:"daily",dayKey:key,silent:true});
+    }
+    function restoreFromPoint(id){
+      var snap=restorePoints.find(function(x){return x.id===id});
+      if(!snap){alert("복원 지점을 찾지 못했습니다.");return}
+      if(!confirm("선택한 시점으로 데이터를 되돌리시겠습니까? 현재 데이터는 교체됩니다."))return;
+      restoreRecords({records:(snap.data.records||[]).map(norm),assets:(snap.data.assets||[]).map(normAsset),investments:(snap.data.investments||[]).map(normInvestment),payments:(snap.data.payments||[]).map(normPayment),hiddenColumns:snap.data.hiddenColumns||{}}, "저장된 시점으로 복구했습니다.");
+    }
+    function deleteRestorePoint(id){
+      if(!confirm("이 복원 지점을 삭제하시겠습니까?"))return;
+      restorePoints=restorePoints.filter(function(x){return x.id!==id});
+      save();
+      renderRestorePoints();
+      toast("복원 지점을 삭제했습니다.");
+    }
+    function renderRestorePoints(){
+      var box=document.getElementById("restorePoints");
+      if(!box)return;
+      if(!restorePoints.length){box.innerHTML='<div class="empty">저장된 복원 지점이 없습니다. 현재 시점 저장으로 이력을 남길 수 있습니다.</div>';return}
+      box.innerHTML='<div class="restore-list">'+restorePoints.map(function(p){
+        var data=p.data||{}, count=(data.records||[]).length, assetsCount=(data.assets||[]).length, investmentsCount=(data.investments||[]).length, paymentsCount=(data.payments||[]).length;
+        return '<div class="restore-item"><div><strong>'+esc(restorePointMetaLabel(p))+(p.kind==="daily"?' <span class="badge normal">자동</span>':'')+'</strong><span>'+esc(formatDateTime(p.createdAt))+' · 계약 '+count+'건 · 자산 '+assetsCount+'건 · 투자/대여 '+investmentsCount+'건 · 입금 '+paymentsCount+'건</span></div><div class="restore-actions"><button class="btn" type="button" onclick="restoreFromPoint(\''+p.id+'\')">복구</button><button class="btn danger" type="button" onclick="deleteRestorePoint(\''+p.id+'\')">삭제</button></div></div>';
+      }).join('')+'</div>';
+    }
+
+    function counts(){var vac=records.filter(function(r){return status(r)==="공실"}).length, exp=expWithin(90), payDue=paymentRows(monthStr(today())).filter(function(x){return x.unpaid>0}).length;document.getElementById("cAll").textContent=records.length;document.getElementById("cAsset").textContent=assets.length;var invBadge=document.getElementById("cInv");if(invBadge)invBadge.textContent=investments.length;document.getElementById("cRent").textContent=records.length;var payBadge=document.getElementById("cPay");if(payBadge)payBadge.textContent=payDue;if(window.cVac)cVac.textContent=vac;if(window.cCon)cCon.textContent=records.length-vac;document.getElementById("cExp").textContent=exp;document.getElementById("cStat").textContent=records.length}
+    function renderDash(){
+      var all=total(records), leasedList=records.filter(function(r){var s=status(r);return s!=="공실"&&s!=="계약종료"}), leased=total(leasedList), vacList=records.filter(function(r){return status(r)==="공실"}), vac=total(vacList), rate=all.area?Math.round(leased.area/all.area*1000)/10:0;
+      var vacancyRate=all.area?Math.round(vac.area/all.area*1000)/10:0;
+      var currentMonth=monthStr(today()), paySummary=monthlyPaymentSummary(currentMonth), unpaidRate=paySummary.due?Math.round(paySummary.unpaid/paySummary.due*1000)/10:0, unpaidRateClass=unpaidRate<=10?"":unpaidRate<=30?" warn":" danger";
+      if(window.coreKpis)coreKpis.innerHTML=''
+        +'<div class="core-card dash-click" onclick="dashboardOpenPayments({month:\''+currentMonth+'\'})"><small>당월 청구금액</small><b>'+won(paySummary.due)+'원</b><span>'+currentMonth+' 기준 '+paySummary.rows.length+'건 청구</span></div>'
+        +'<div class="core-card dash-click" onclick="dashboardOpenPayments({month:\''+currentMonth+'\'})"><small>당월 입금금액</small><b>'+won(paySummary.paid)+'원</b><span>완납 '+paySummary.paidCount+'건 · 부분/미납 '+paySummary.unpaidCount+'건</span></div>'
+        +'<div class="core-card dash-click" onclick="dashboardOpenPayments({month:\''+currentMonth+'\'})"><small>당월 미수금액</small><b>'+won(paySummary.unpaid)+'원</b><span>미수 '+paySummary.unpaidCount+'건 · 즉시 수금 확인</span></div>'
+        +'<div class="core-card dash-click" onclick="dashboardOpenPayments({month:\''+currentMonth+'\'})"><small>미수율</small><b>'+unpaidRate+'%</b><span>입금 '+won(paySummary.paid)+'원 / 청구 '+won(paySummary.due)+'원</span><div class="progress'+unpaidRateClass+'"><i style="width:'+Math.min(100,unpaidRate)+'%"></i></div></div>';
+      var assetTotals=assets.reduce(function(a,x){a.count++;a.land+=num(x.landAreaM2);a.gross+=num(x.grossFloorAreaM2);a.lease+=num(x.areaM2);a.price+=num(x.acquisitionPrice);return a},{count:0,land:0,gross:0,lease:0,price:0});
+      var leaseArr=[
+        ["총 관리 면적",one(all.area)+"㎡",one(all.py)+"평",'dashboardOpenRent("","","")'],
+        ["총 임대 면적",one(leased.area)+"㎡","임대율 "+rate+"%",'dashboardOpenRent("","임대중","")'],
+        ["총 공실 면적",one(vac.area)+"㎡","공실 "+vacList.length+"건",'dashboardOpenRent("","공실","")'],
+        ["월 임대료",won(leased.rent)+"원","관리비 "+won(leased.fee)+"원",'dashboardOpenPayments({month:"'+currentMonth+'"})'],
+        ["총 보증금",won(leased.dep)+"원","임대중 기준",'dashboardOpenRent("","임대중","")'],
+        ["만기 30일",expWithin(30)+"건","90일 "+expWithin(90)+"건",'dashboardOpenExpiry(90)'],
+        ["계약 건수",records.length+"건","임대 "+leasedList.length+"건",'dashboardOpenRent("","","")'],
+        ["공실 건수",vacList.length+"건",one(vac.area)+"㎡",'dashboardOpenRent("","공실","")']];
+      var assetArr=[
+        ["자산 수",assetTotals.count+"건","건물/토지",'tab("assets")'],
+        ["대지면적",one(assetTotals.land)+"㎡",one(py(assetTotals.land))+"평",'tab("assets")'],
+        ["연면적",one(assetTotals.gross)+"㎡",one(py(assetTotals.gross))+"평",'tab("assets")'],
+        ["임대 면적",one(assetTotals.lease)+"㎡",one(py(assetTotals.lease))+"평",'tab("assets")'],
+        ["취득가",shortWon(assetTotals.price),"총액",'tab("assets")'],
+        ["평균 건폐율",avgAssetRatio("coverage")+"%","자동 계산",'tab("assets")'],
+        ["평균 용적률",avgAssetRatio("far")+"%","자동 계산",'tab("assets")'],
+        ["공실률",vacancyRate+"%","면적 기준",'dashboardOpenRent("","공실","")']];
+      leaseSummary.innerHTML=leaseArr.map(miniMetric).join("");
+      assetSummary.innerHTML=assetArr.map(miniMetric).join("");
+      renderSiteCards(currentMonth);
+      recentList.innerHTML=simpleList(records.slice().sort(function(a,b){return String(b.createdAt).localeCompare(String(a.createdAt))}).slice(0,4),"created");
+      recentPayList.innerHTML=paymentRecentList(currentMonth);
+      soonList.innerHTML=simpleList(records.filter(function(r){var d=remain(r);return status(r)!=="공실"&&d!==null&&d>=0}).sort(function(a,b){return remain(a)-remain(b)}).slice(0,4),"dday");
+      topUnpaidList.innerHTML=topUnpaidListHtml(currentMonth);
+      longUnpaidList.innerHTML=longUnpaidListHtml();
+      vacPreview.innerHTML=simpleList(vacList.slice(0,4),"vacancy");
+    }
+    function miniMetric(x){return'<button class="mini dash-click" type="button" onclick="'+String(x[3]||"").replace(/"/g,'&quot;')+'"><small>'+x[0]+'</small><b>'+x[1]+'</b><span>'+x[2]+'</span></button>'}
+    function avgAssetRatio(type){if(!assets.length)return 0;var sum=assets.reduce(function(a,x){return a+(type==="coverage"?assetCoverage(x):assetFar(x))},0);return Math.round(sum/assets.length*10)/10}
+    function renderSiteCards(month){
+      var grouped=group(paymentRows(month),"site"), html=Object.keys(grouped).map(function(site){
+        var rows=grouped[site], due=rows.reduce(function(a,x){return a+x.due},0), unpaid=rows.reduce(function(a,x){return a+x.unpaid},0), rate=due?Math.round((due-unpaid)/due*1000)/10:0;
+        return '<button class="section dash-click" type="button" onclick="dashboardOpenRent(\''+esc(site)+'\',\'\',\'\')"><h3>'+esc(site)+'</h3><p class="kpi"><small>당월 회수율</small><b>'+rate+'%</b><span>청구 '+won(due)+'원 · 미수 '+won(unpaid)+'원</span></p><span class="widget-note">클릭하면 임대 현황에서 해당 사업장을 확인합니다.</span></button>';
+      }).join("");
+      siteCards.innerHTML=html||'<div class="empty">사업장별 회수 데이터가 없습니다.</div>';
+    }
+    function simpleList(list,mode){
+      if(!list.length)return'<li class="empty">표시할 데이터가 없습니다.</li>';
+      return list.map(function(r){
+        var leftMeta='', sub='', action='openModal(\''+r.id+'\')', rightLabel='', label=(r.tenantName||r.siteName)+" · "+r.unitName;
+        if(mode==="created"){leftMeta='계약 체결일 '+esc(r.startDate||r.createdAt||"-");sub=leftMeta;}
+        else if(mode==="dday"){var d=remain(r);leftMeta=d==null?'D-Day -':'D-'+d;sub=esc(r.buildingName)+' · '+esc(r.floor)+' · 잔여 '+remText(remain(r));rightLabel='<span class="muted" style="font-weight:700;margin-right:8px">'+leftMeta+'</span>';action='dashboardOpenExpiry(90,\''+r.id+'\')';}
+        else if(mode==="vacancy"){sub=esc(r.siteName)+' · '+esc(r.floor)+' · 공실 시작 '+esc(r.vacancyStartDate||"-");action='dashboardOpenRent(\''+esc(r.siteName)+'\',\'공실\',\'\')';}
+        else{sub=esc(r.buildingName)+' · '+esc(r.floor)+' · 잔여 '+remText(remain(r));}
+        return'<li class="item dash-click" onclick="'+action+'"><div><b>'+esc(label)+'</b><span>'+sub+'</span></div><div style="display:flex;align-items:center;gap:8px">'+rightLabel+'<button class="btn small" onclick="event.stopPropagation();openModal(\''+r.id+'\')">'+badge(status(r))+'</button></div></li>';
+      }).join("");
+    }
+    function paymentRecentList(month){
+      var items=payments.slice().sort(function(a,b){return String(b.paidDate||"").localeCompare(String(a.paidDate||""))}).slice(0,4);
+      if(!items.length)return'<li class="empty">최근 입금 등록 내역이 없습니다.</li>';
+      return items.map(function(p){var r=findRid(p.recordId);if(!r)return'';return'<li class="item dash-click" onclick="dashboardOpenPayments({recordId:\''+r.id+'\',month:\''+(p.month||month)+'\'})"><div><b>'+esc(r.tenantName||"-")+'</b><span>'+esc(p.paidDate||"-")+' · '+esc(r.siteName)+' · '+esc(r.unitName)+'</span></div><div><strong class="num">'+won(p.amount)+'원</strong></div></li>';}).join("")||'<li class="empty">최근 입금 등록 내역이 없습니다.</li>';
+    }
+    function topUnpaidListHtml(month){
+      var rows=paymentRows(month).filter(function(x){return x.unpaid>0}).sort(function(a,b){return b.unpaid-a.unpaid}).slice(0,4);
+      if(!rows.length)return'<li class="empty">당월 미수 업체가 없습니다.</li>';
+      return rows.map(function(x){return'<li class="item dash-click" onclick="dashboardOpenPayments({recordId:\''+x.record.id+'\',month:\''+month+'\',companyNames:[\''+esc(x.tenant)+'\']})"><div><b>'+esc(x.tenant)+'</b><span>'+esc(x.site)+' · '+esc(x.unit)+' · 납입 예정 '+esc(x.dueDate||"-")+'</span></div><div><strong class="num">'+won(x.unpaid)+'원</strong></div></li>';}).join("");
+    }
+    function longUnpaidListHtml(){
+      var rows=arrearsByRecord(6).filter(function(x){return x.months>=3}).slice(0,4);
+      if(!rows.length)return'<li class="empty">3개월 이상 장기 미수 업체가 없습니다.</li>';
+      return rows.map(function(x){return'<li class="item dash-click" onclick="dashboardOpenPayments({recordId:\''+x.record.id+'\',month:\''+x.lastMonth+'\',companyNames:[\''+esc(x.record.tenantName)+'\']})"><div><b>'+esc(x.record.tenantName)+'</b><span>'+esc(x.record.siteName)+' · '+x.months+'개월 미수 · 최근 '+x.lastMonth+'</span></div><div><strong class="num">'+won(x.total)+'원</strong></div></li>';}).join("");
+    }
+    function siteFilter(){var cur=rentSite.value, sites=Array.from(new Set(records.map(function(r){return r.siteName}).filter(Boolean)));rentSite.innerHTML='<option value="">전체 사업장</option>'+sites.map(function(s){return'<option>'+esc(s)+'</option>'}).join("");rentSite.value=cur}
+    function renderAssets(){if(!window.assetBody)return;if(!assets.length){assetBody.innerHTML='<tr><td colspan="15" class="empty">등록된 자산이 없습니다.</td></tr>';return}assetBody.innerHTML=assets.map(function(a){var cover=assetCoverage(a), far=assetFar(a);return'<tr><td>'+esc(a.assetType||"-")+'</td><td>'+esc(a.siteName||"-")+'</td><td>'+esc(a.buildingName||"-")+'</td><td>'+esc(a.address||"-")+'</td><td>'+one(a.landAreaM2)+'</td><td>'+one(a.buildingAreaM2)+'</td><td>'+one(a.grossFloorAreaM2)+'</td><td>'+cover+'%</td><td>'+far+'%</td><td>'+one(a.areaM2)+'</td><td>'+one(a.pyeong)+'</td><td>'+esc(a.acquiredDate||"-")+'</td><td class="num">'+won(a.acquisitionPrice)+'</td><td>'+esc(a.memo||"-")+'</td><td><button class="btn small" onclick="openAssetForm(\''+a.id+'\')">수정</button></td></tr>'}).join("")}
+    function openAssetForm(aid){parkForm();var a=aid?findAsset(aid):{};modalTitle.textContent=aid?"자산 수정":"자산 추가";modalBody.innerHTML='<div class="form"><input type="hidden" id="assetEditId" value="'+esc(a.id||"")+'"><div><label>자산유형</label><select id="assetTypeInput" class="field"><option>건물</option><option>토지</option><option>건물+토지</option></select></div><div><label>사업장명 *</label><input id="assetSiteInput" class="field" required value="'+esc(a.siteName||"")+'"></div><div><label>건물명</label><input id="assetBuildingInput" class="field" value="'+esc(a.buildingName||"")+'"></div><div><label>주소</label><input id="assetAddressInput" class="field" value="'+esc(a.address||"")+'"></div><div><label>대지면적(㎡)</label><input id="assetLandAreaInput" class="field" inputmode="decimal" oninput="updateAssetRatios()" value="'+esc(a.landAreaM2||"")+'"></div><div><label>건축면적(㎡)</label><input id="assetBuildingAreaInput" class="field" inputmode="decimal" oninput="updateAssetRatios()" value="'+esc(a.buildingAreaM2||"")+'"></div><div><label>연면적(㎡)</label><input id="assetGrossAreaInput" class="field" inputmode="decimal" oninput="updateAssetRatios()" value="'+esc(a.grossFloorAreaM2||"")+'"></div><div><label>건폐율</label><input id="assetCoverageInput" class="field" readonly value="'+assetCoverage(a)+'%"></div><div><label>용적률</label><input id="assetFarInput" class="field" readonly value="'+assetFar(a)+'%"></div><div><label>임대 면적(㎡)</label><input id="assetAreaInput" class="field" inputmode="decimal" oninput="updateAssetLeasePyeong()" value="'+esc(a.areaM2||"")+'"></div><div><label>임대 평형</label><input id="assetPyeongInput" class="field" inputmode="decimal" value="'+esc(a.pyeong||"")+'"></div><div><label>취득일</label><input id="assetDateInput" class="field" type="date" value="'+esc(a.acquiredDate||"")+'"></div><div><label>취득가</label><input id="assetPriceInput" class="field" inputmode="numeric" oninput="moneyInput(this)" value="'+(a.acquisitionPrice?won(a.acquisitionPrice):"")+'"></div><div class="full"><label>비고</label><textarea id="assetMemoInput" class="field">'+esc(a.memo||"")+'</textarea></div></div><div class="sticky-actions" style="position:static;margin:16px -16px -16px"><button class="btn" onclick="closeModal()">닫기</button>'+(aid?'<button class="btn danger" onclick="deleteAsset(\''+a.id+'\')">삭제</button>':"")+'<button class="btn primary" onclick="saveAssetFromModal()">저장</button></div>';if(a.assetType)assetTypeInput.value=a.assetType;modalBg.classList.add("open")}
+    function saveAssetFromModal(){var aid=assetEditId.value||makeId(), a={id:aid,assetType:assetTypeInput.value,siteName:assetSiteInput.value.trim(),buildingName:assetBuildingInput.value.trim(),address:assetAddressInput.value.trim(),landAreaM2:num(assetLandAreaInput.value),buildingAreaM2:num(assetBuildingAreaInput.value),grossFloorAreaM2:num(assetGrossAreaInput.value),areaM2:num(assetAreaInput.value),pyeong:num(assetPyeongInput.value)||py(assetAreaInput.value),acquiredDate:assetDateInput.value,memo:assetMemoInput.value.trim(),acquisitionPrice:num(assetPriceInput.value)};a.buildingCoverageRatio=assetCoverage(a);a.floorAreaRatio=assetFar(a);if(!a.siteName){alert("사업장명을 입력해 주세요.");return}var i=assets.findIndex(function(x){return x.id===aid});if(i>-1)assets[i]=a;else assets.push(a);records.forEach(function(r){if(r.assetId===aid){r.siteName=a.siteName;r.buildingName=a.buildingName;r.address=a.address}});save();renderAll();closeModal();toast("자산 정보가 저장되었습니다.")}
+    function assetCoverage(a){return a&&num(a.landAreaM2)?Math.round(num(a.buildingAreaM2)/num(a.landAreaM2)*1000)/10:0}
+    function assetFar(a){return a&&num(a.landAreaM2)?Math.round(num(a.grossFloorAreaM2)/num(a.landAreaM2)*1000)/10:0}
+    function updateAssetRatios(){if(!window.assetCoverageInput)return;var a={landAreaM2:num(assetLandAreaInput.value),buildingAreaM2:num(assetBuildingAreaInput.value),grossFloorAreaM2:num(assetGrossAreaInput.value)};assetCoverageInput.value=assetCoverage(a)+"%";assetFarInput.value=assetFar(a)+"%"}
+    function updateAssetLeasePyeong(){var a=num(assetAreaInput.value);if(a>0)assetPyeongInput.value=py(a)}
+    function deleteAsset(aid){if(!confirm("선택한 자산을 삭제하시겠습니까? 임대 계약 데이터는 삭제되지 않습니다."))return;assets=assets.filter(function(a){return a.id!==aid});records.forEach(function(r){if(r.assetId===aid)r.assetId=""});save();renderAll();closeModal();toast("자산 정보가 삭제되었습니다.")}
+    function normInvestment(x){
+      var start=x.contractStart||"", end=x.contractEnd||"";
+      if((!start&&!end)&&x.contractPeriod){
+        var parts=String(x.contractPeriod).replace(/\./g,"-").split("~").map(function(v){return v.trim()}).filter(Boolean);
+        if(parts.length===1)end=parts[0];
+        if(parts.length>=2){start=parts[0];end=parts[1]}
+      }
+      start=toDateText(start);
+      end=toDateText(end);
+      return{id:x.id||makeId(),type:x.type||"투자",name:x.name||"",representative:x.representative||"",address:x.address||"",content:x.content||"",amount:num(x.amount),contractStart:start,contractEnd:end,memo:x.memo||""}
+    }
+    function investmentPeriodText(x){
+      var s=x.contractStart||"", e=x.contractEnd||"";
+      if(s&&e)return s+" ~ "+e;
+      if(e)return "~"+e;
+      if(s)return s+" ~";
+      return "-";
+    }
+    function renderInvestments(){if(!window.investmentBody)return;if(!investments.length){investmentBody.innerHTML='<tr><td colspan="9" class="empty">등록된 투자/대여 데이터가 없습니다.</td></tr>';return}investmentBody.innerHTML=investments.map(function(x){return'<tr><td>'+esc(x.type)+'</td><td>'+esc(x.name||"-")+'</td><td>'+esc(x.representative||"-")+'</td><td>'+esc(x.address||"-")+'</td><td>'+esc(x.content||"-")+'</td><td class="num">'+won(x.amount)+'</td><td>'+esc(investmentPeriodText(x))+'</td><td class="preline">'+esc(x.memo||"-")+'</td><td><button class="btn small" onclick="openInvestmentForm(\''+x.id+'\')">수정</button></td></tr>'}).join("")}
+    function openInvestmentForm(iid){parkForm();var x=iid?(investments.find(function(v){return v.id===iid})||{}):{};modalTitle.textContent=iid?"투자/대여 수정":"투자/대여 추가";modalBody.innerHTML='<div class="form"><input type="hidden" id="investmentEditId" value="'+esc(x.id||"")+'"><div><label>구분</label><select id="investmentTypeInput" class="field"><option>투자</option><option>대여금</option></select></div><div><label>업체 *</label><input id="investmentNameInput" class="field" value="'+esc(x.name||"")+'"></div><div><label>대표</label><input id="investmentRepresentativeInput" class="field" value="'+esc(x.representative||"")+'"></div><div class="wide"><label>주소</label><input id="investmentAddressInput" class="field" value="'+esc(x.address||"")+'"></div><div class="wide"><label>주요 내용</label><input id="investmentContentInput" class="field" value="'+esc(x.content||"")+'"></div><div><label>투자금(대여금)</label><input id="investmentAmountInput" class="field" inputmode="numeric" oninput="moneyInput(this)" value="'+(x.amount?won(x.amount):"")+'"></div><div><label>계약 시작일</label><input id="investmentStartInput" class="field" type="date" value="'+esc(x.contractStart||"")+'"></div><div><label>계약 종료일</label><input id="investmentEndInput" class="field" type="date" value="'+esc(x.contractEnd||"")+'"></div><div class="full"><label>비고</label><textarea id="investmentMemoInput" class="field">'+esc(x.memo||"")+'</textarea></div></div><div class="sticky-actions" style="position:static;margin:16px -16px -16px"><button class="btn" onclick="closeModal()">닫기</button>'+(iid?'<button class="btn danger" onclick="deleteInvestment(\''+x.id+'\')">삭제</button>':"")+'<button class="btn primary" onclick="saveInvestmentFromModal()">저장</button></div>';if(x.type)investmentTypeInput.value=x.type;modalBg.classList.add("open")}
+    function saveInvestmentFromModal(){var iid=investmentEditId.value||makeId(), x=normInvestment({id:iid,type:investmentTypeInput.value,name:investmentNameInput.value.trim(),representative:investmentRepresentativeInput.value.trim(),address:investmentAddressInput.value.trim(),content:investmentContentInput.value.trim(),amount:investmentAmountInput.value,contractStart:investmentStartInput.value,contractEnd:investmentEndInput.value,memo:investmentMemoInput.value.trim()});if(!x.name){alert("업체를 입력해 주세요.");return}if(x.contractStart&&x.contractEnd&&parse(x.contractStart)>parse(x.contractEnd)){alert("계약 종료일은 계약 시작일 이후여야 합니다.");return}var i=investments.findIndex(function(v){return v.id===iid});if(i>-1)investments[i]=x;else investments.push(x);save();renderAll();closeModal();toast("투자/대여 정보가 저장되었습니다.")}
+    function deleteInvestment(iid){if(!confirm("선택한 투자/대여 데이터를 삭제하시겠습니까?"))return;investments=investments.filter(function(v){return v.id!==iid});save();renderAll();closeModal();toast("투자/대여 정보가 삭제되었습니다.")}
+    function renderRent(){
+      var visible=cols.filter(function(c){return !hiddenCols[c[0]]});
+      rentHead.innerHTML=visible.map(function(c){var m=sort.key===c[0]?(sort.dir==="asc"?" ▲":" ▼"):"";return'<th class="sort '+(c[2]?"num":"")+'" onclick="setSort(\''+c[0]+'\')">'+c[1]+m+'</th>'}).join("");
+      var q=(rentQ.value||"").toLowerCase(), sf=rentStatus.value, site=rentSite.value;
+      renderRentSiteSummary(site);
+      var list=records.filter(function(r){var hay=[r.category,r.siteName,r.buildingName,r.dong,r.floor,r.unitName,r.leaseSection,r.tenantName,r.memo].join(" ").toLowerCase();return(!q||hay.indexOf(q)>-1)&&(!sf||status(r)===sf)&&(!site||r.siteName===site)});list=sortList(list);
+      if(!list.length){rentBody.innerHTML='<tr><td colspan="'+cols.length+'" class="empty">검색 조건에 맞는 임대 현황이 없습니다.</td></tr>';rentFoot.innerHTML=""}else{
+        rentBody.innerHTML=list.map(function(r,i){return'<tr onclick="openModal(\''+r.id+'\')">'+visible.map(function(c){return'<td class="'+(c[2]?"num":"")+'">'+cell(r,c[0],i)+'</td>'}).join("")+'</tr>'}).join("");
+        var t=total(list), activeTotal=total(list.filter(function(r){return status(r)!=="공실"}));
+        function rentTotalRow(label, sum){return'<tr>'+visible.map(function(c,i){var v="";if(i===0)v=label;if(c[0]==="areaM2")v=one(sum.area);if(c[0]==="pyeong")v=one(sum.py);if(c[0]==="deposit")v=won(sum.dep);if(c[0]==="monthlyRent")v=won(sum.rent);if(c[0]==="maintenanceFee")v=won(sum.fee);return'<td class="'+(c[2]?"num":"")+'">'+v+'</td>'}).join("")+'</tr>'}
+        rentFoot.innerHTML=rentTotalRow("총계",t)+rentTotalRow("공실 제외",activeTotal)
+      }
+      rentMob.innerHTML=list.length?list.map(function(r){return'<article class="mcard" onclick="openModal(\''+r.id+'\')"><h4>'+esc(r.siteName)+' · '+esc(r.unitName)+'</h4><dl><dt>상태</dt><dd>'+badge(status(r))+'</dd><dt>임차사</dt><dd>'+esc(r.tenantName||"-")+'</dd><dt>면적</dt><dd>'+one(r.areaM2)+'㎡ / '+one(r.pyeong)+'평</dd><dt>월 임대료</dt><dd>'+won(r.monthlyRent)+'원</dd><dt>종료일</dt><dd>'+esc(r.endDate||"-")+' ('+remText(remain(r))+')</dd></dl></article>'}).join(""):'<div class="empty">검색 조건에 맞는 임대 현황이 없습니다.</div>'
+    }
+    function setSort(k){if(sort.key===k)sort.dir=sort.dir==="asc"?"desc":"asc";else{sort.key=k;sort.dir="asc"}renderRent()}
+    function renderRentSiteSummary(site){if(!rentSiteSummary)return;var list=site?records.filter(function(r){return r.siteName===site}):records.slice(), label=site||"전체 사업장", all=total(list), leasedList=list.filter(function(r){var s=status(r);return s!=="공실"&&s!=="계약종료"}), leased=total(leasedList), vacList=list.filter(function(r){return status(r)==="공실"}), vac=total(vacList), rate=all.area?Math.round(leased.area/all.area*1000)/10:0, exp=list.filter(function(r){var d=remain(r);return status(r)!=="공실"&&d!==null&&d>=0&&d<=90}).length;rentSiteSummary.innerHTML='<div class="kpi"><small>요약 범위</small><b>'+esc(label)+'</b><span>등록 '+list.length+'건 / 임대 '+leasedList.length+'건 / 공실 '+vacList.length+'건</span></div><div class="kpi"><small>임대율</small><b>'+rate+'%</b><span>임대 '+one(leased.area)+'㎡ / 관리 '+one(all.area)+'㎡</span></div><div class="kpi"><small>월 임대료 / 관리비</small><b>'+won(leased.rent)+'원</b><span>관리비 '+won(leased.fee)+'원</span></div><div class="kpi"><small>보증금 / 만기</small><b>'+won(leased.dep)+'원</b><span>90일 이내 만기 '+exp+'건 · 공실 '+one(vac.area)+'㎡</span></div>'}
+    function sortList(list){return list.slice().sort(function(a,b){var av=sort.key==="status"?status(a):sort.key==="remain"?remain(a):a[sort.key], bv=sort.key==="status"?status(b):sort.key==="remain"?remain(b):b[sort.key];if(typeof av==="number"||typeof bv==="number")return sort.dir==="asc"?(num(av)-num(bv)):(num(bv)-num(av));return sort.dir==="asc"?String(av||"").localeCompare(String(bv||""),"ko"):String(bv||"").localeCompare(String(av||""),"ko")})}
+    function cell(r,k,i){if(k==="no")return i+1;if(k==="status")return badge(status(r));if(k==="remain")return remText(remain(r));if(k==="address")return esc(r.address||assetForRecord(r).address||"-");if(k==="areaM2"||k==="pyeong")return one(r[k]);if(k==="deposit"||k==="monthlyRent"||k==="maintenanceFee")return won(r[k]);return esc(r[k]||"-")}
+    function openColumnModal(){parkForm();modalTitle.textContent="임대 현황 열 표시 설정";modalBody.innerHTML='<div class="section"><h3>표시할 열</h3><div class="form">'+cols.map(function(c){return'<label><input type="checkbox" '+(!hiddenCols[c[0]]?"checked":"")+' onchange="setColumnVisible(\''+c[0]+'\',this.checked)"> '+c[1]+'</label>'}).join("")+'</div></div><div class="sticky-actions" style="position:static;margin:16px -16px -16px"><button class="btn" onclick="showAllColumns()">전체 표시</button><button class="btn primary" onclick="closeModal()">확인</button></div>';modalBg.classList.add("open")}
+    function setColumnVisible(key,show){hiddenCols[key]=!show;save();renderRent()}
+    function showAllColumns(){hiddenCols={};save();renderRent();openColumnModal()}
+    function visibleRentCols(){return cols.filter(function(c){return !hiddenCols[c[0]]})}
+    function rentExportRows(){var q=(rentQ.value||"").toLowerCase(), sf=rentStatus.value, site=rentSite.value;return sortList(records.filter(function(r){var hay=[r.category,r.siteName,r.buildingName,r.dong,r.floor,r.unitName,r.leaseSection,r.tenantName,r.memo].join(" ").toLowerCase();return(!q||hay.indexOf(q)>-1)&&(!sf||status(r)===sf)&&(!site||r.siteName===site)}))}
+    function printRentPdf(){var v=visibleRentCols(), rows=rentExportRows(), summary=rentSummaryHtml(rentSite.value||"전체 사업장",rentSite.value?records.filter(function(r){return r.siteName===rentSite.value}):records), table='<table><thead><tr>'+v.map(function(c){return'<th>'+esc(c[1])+'</th>'}).join("")+'</tr></thead><tbody>'+rows.map(function(r,i){return'<tr>'+v.map(function(c){return'<td class="'+(c[2]?"num":"")+'">'+esc(cellPlain(r,c[0],i))+'</td>'}).join("")+'</tr>'}).join("")+'</tbody></table>', html='<!DOCTYPE html><html lang="ko"><head><meta charset="UTF-8"><title>임대 현황 출력</title><style>@page{size:A4 landscape;margin:10mm}body{font-family:Malgun Gothic,Arial,sans-serif;color:#111827;margin:0}h1{font-size:20px;margin:0 0 12px}.summary{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:12px}.box{border:1px solid #d7dde5;border-radius:6px;padding:8px}.box small{display:block;color:#64748b;font-weight:700}.box b{display:block;font-size:16px;margin-top:3px}table{width:100%;border-collapse:collapse;font-size:10px}th,td{border:1px solid #d7dde5;padding:5px;white-space:nowrap;text-align:center}th{background:#e9f0f7;text-align:center;font-weight:800}.num{text-align:right}tbody tr:nth-child(even){background:#f8fafc}</style></head><body><h1>임대 현황</h1>'+summary+table+'</body></html>', w=window.open("","rentPrint","width=1200,height=800");if(!w){alert("팝업이 차단되었습니다. 팝업 허용 후 다시 시도해 주세요.");return}w.document.open();w.document.write(html);w.document.close();w.focus();setTimeout(function(){w.print()},300)}
+    function rentSummaryHtml(label,list){var all=total(list), leasedList=list.filter(function(r){var s=status(r);return s!=="공실"&&s!=="계약종료"}), leased=total(leasedList), vacList=list.filter(function(r){return status(r)==="공실"}), rate=all.area?Math.round(leased.area/all.area*1000)/10:0, exp=list.filter(function(r){var d=remain(r);return status(r)!=="공실"&&d!==null&&d>=0&&d<=90}).length;return'<div class="summary"><div class="box"><small>요약 범위</small><b>'+esc(label)+'</b><small>등록 '+list.length+'건 / 임대 '+leasedList.length+'건 / 공실 '+vacList.length+'건</small></div><div class="box"><small>임대율</small><b>'+rate+'%</b><small>임대 '+one(leased.area)+'㎡ / 관리 '+one(all.area)+'㎡</small></div><div class="box"><small>월 임대료 / 관리비</small><b>'+won(leased.rent)+'원</b><small>관리비 '+won(leased.fee)+'원</small></div><div class="box"><small>보증금 / 만기</small><b>'+won(leased.dep)+'원</b><small>90일 이내 만기 '+exp+'건 · 공실 '+one(vacList.length?total(vacList).area:0)+'㎡</small></div></div>'}
+    function exportRentExcel(){var v=visibleRentCols(), rows=rentExportRows(), csv=[v.map(function(c){return c[1]}).join(",")].concat(rows.map(function(r,i){return v.map(function(c){var raw=cellPlain(r,c[0],i);return '"'+String(raw).replace(/"/g,'""')+'"'}).join(",")})).join("\r\n"), blob=new Blob(["\ufeff"+csv],{type:"text/csv;charset=utf-8"}), url=URL.createObjectURL(blob), a=document.createElement("a");a.href=url;a.download="임대현황_"+dateStr(today())+".csv";document.body.appendChild(a);a.click();a.remove();URL.revokeObjectURL(url);toast("엑셀 파일을 저장했습니다.")}
+    function cellPlain(r,k,i){if(k==="no")return i+1;if(k==="status")return status(r);if(k==="remain")return remText(remain(r));if(k==="address")return r.address||assetForRecord(r).address||"";if(k==="areaM2"||k==="pyeong")return one(r[k]);if(k==="deposit"||k==="monthlyRent"||k==="maintenanceFee")return won(r[k]);return r[k]||""}
+
+    function renderVacancy(){
+      var q=(vacQ.value||"").toLowerCase(), list=records.filter(function(r){var hay=[r.siteName,r.buildingName,r.dong,r.floor,r.unitName,r.memo].join(" ").toLowerCase();return status(r)==="공실"&&(!q||hay.indexOf(q)>-1)}), t=total(list), long=list.filter(function(r){return vacDays(r)>=90}).length;
+      vacKpi.innerHTML='<div class="kpi"><small>공실 건수</small><b>'+list.length+'건</b><span>자동 필터링</span></div><div class="kpi"><small>공실 면적 합계</small><b>'+one(t.area)+'㎡</b><span>'+one(t.py)+'평</span></div><div class="kpi"><small>예상 월 임대수익</small><b>'+won(t.rent)+'원</b><span>연 '+won(t.rent*12)+'원</span></div><div class="kpi"><small>장기 공실 경고</small><b>'+long+'건</b><span>90일 이상</span></div>';
+      if(!list.length){vacBody.innerHTML='<tr><td colspan="14" class="empty">등록된 공실이 없습니다.</td></tr>';vacFoot.innerHTML=""}else{
+        vacBody.innerHTML=list.map(function(r){var d=vacDays(r);return'<tr onclick="openModal(\''+r.id+'\')"><td>'+esc(r.siteName)+'</td><td>'+esc(r.buildingName)+'</td><td>'+esc(r.dong||"-")+'</td><td>'+esc(r.floor)+'</td><td>'+esc(r.unitName)+'</td><td class="num">'+one(r.areaM2)+'</td><td class="num">'+one(r.pyeong)+'</td><td class="num">'+won(r.deposit)+'</td><td class="num">'+won(r.monthlyRent)+'</td><td>'+esc(r.vacancyStartDate||"-")+'</td><td>'+d+'일</td><td>'+(d>=90?'<span class="badge 만기임박">장기 공실</span>':'<span class="badge normal">관리중</span>')+'</td><td>'+esc(r.memo||"-")+'</td><td><button class="btn small" onclick="event.stopPropagation();releaseVac(\''+r.id+'\')">공실 해제</button></td></tr>'}).join("");
+        vacFoot.innerHTML='<tr><td colspan="5">공실 합계</td><td class="num">'+one(t.area)+'</td><td class="num">'+one(t.py)+'</td><td class="num">'+won(t.dep)+'</td><td class="num">'+won(t.rent)+'</td><td colspan="5"></td></tr>'
+      }
+      vacMob.innerHTML=list.length?list.map(function(r){var d=vacDays(r);return'<article class="mcard" onclick="openModal(\''+r.id+'\')"><h4>'+esc(r.siteName)+' · '+esc(r.unitName)+'</h4><dl><dt>상태</dt><dd>'+(d>=90?'<span class="badge 만기임박">장기 공실</span>':'<span class="badge 공실">공실</span>')+'</dd><dt>면적</dt><dd>'+one(r.areaM2)+'㎡ / '+one(r.pyeong)+'평</dd><dt>예상 월세</dt><dd>'+won(r.monthlyRent)+'원</dd><dt>공실 기간</dt><dd>'+d+'일</dd></dl><br><button class="btn small" onclick="event.stopPropagation();releaseVac(\''+r.id+'\')">공실 해제</button></article>'}).join(""):'<div class="empty">등록된 공실이 없습니다.</div>'
+    }
+    function vacDays(r){var s=parse(r.vacancyStartDate);return s?Math.max(0,Math.ceil((today()-s)/86400000)):0}
+    function releaseVac(rid){var r=findRid(rid);if(!r)return;r.manualStatus="임대중";r.vacancyStartDate="";save();renderAll();editRecord(rid);toast("공실 해제 처리되었습니다. 계약 정보를 보완해 주세요.")}
+
+    function parkFormHome(){var f=document.getElementById("form");if(f&&window.formParking&&!formParking.contains(f))formParking.appendChild(f)}
+    function parkForm(){var f=document.getElementById("form");if(f&&window.modalBody&&modalBody.contains(f))formParking.appendChild(f)}
+    function openFormModal(titleText){parkForm();modalTitle.textContent=titleText;modalBody.innerHTML="";modalBody.appendChild(document.getElementById("form"));assetOptions();modalBg.classList.add("open")}
+    function newContract(){openFormModal("신규 계약 등록");resetForm();manualStatus.value="임대중";setTimeout(function(){siteName.focus()},0)}
+    function newVacancy(){openFormModal("공실 등록");resetForm();manualStatus.value="공실";vacancyStartDate.value=dateStr(today());setTimeout(function(){siteName.focus()},0)}
+    function resetForm(){if(!document.getElementById("form"))return;form.reset();idEl().value="";delBtn.style.display="none";manualStatus.value="임대중";autoRenew.value="아니오";hint.textContent="잔여일: -"}
+    function idEl(){return document.getElementById("id")}
+    function val(x){return document.getElementById(x).value.trim()}
+    function setv(x,v){document.getElementById(x).value=v||""}
+    function autoPyeong(){var a=num(areaM2.value);if(a>0)pyeong.value=py(a)}
+    function moneyInput(el){var n=num(el.value);el.value=n?won(n):""}
+    function remainHint(){hint.textContent="잔여일: "+remText(remain({endDate:endDate.value}))}
+    function vacancyDefault(){if(manualStatus.value==="공실"&&!vacancyStartDate.value)vacancyStartDate.value=dateStr(today())}
+    function collect(){var old=findRid(idEl().value)||{}, a=findAsset(val("assetId"))||{};return{id:idEl().value||makeId(),assetId:val("assetId"),address:a.address||old.address||"",createdAt:old.createdAt||dateStr(today()),category:cat(),siteName:val("siteName"),buildingName:val("buildingName"),dong:val("dong"),floor:val("floor"),unitName:val("unitName"),leaseSection:val("leaseSection"),areaM2:num(val("areaM2")),pyeong:num(val("pyeong"))||py(val("areaM2")),tenantName:val("tenantName"),businessNumber:val("businessNumber"),managerName:val("managerName"),phone:val("phone"),deposit:num(val("deposit")),monthlyRent:num(val("monthlyRent")),maintenanceFee:num(val("maintenanceFee")),startDate:val("startDate"),endDate:val("endDate"),autoRenew:val("autoRenew"),manualStatus:val("manualStatus"),vacancyStartDate:val("vacancyStartDate"),renewalNeeded:!!old.renewalNeeded,priorReceivable:num(old.priorReceivable),priorReceivableMemo:old.priorReceivableMemo||"",memo:val("memo")}}
+    function cat(){var s=val("leaseSection");if(s.indexOf("상가")>-1)return"상가";if(s.indexOf("창고")>-1)return"창고";if(s.indexOf("공유")>-1)return"공유";return"사무"}
+    function validate(r){if(!r.siteName)return"사업장명을 입력해 주세요.";if(!r.buildingName)return"건물명을 입력해 주세요.";if(!r.floor)return"층을 입력해 주세요.";if(!r.unitName)return"호실/구역을 입력해 주세요.";if(!r.areaM2)return"면적(㎡)을 입력해 주세요.";if(r.manualStatus!=="공실"){if(!r.tenantName)return"임차사명을 입력해 주세요.";if(!r.startDate||!r.endDate)return"계약시작일과 계약종료일을 입력해 주세요.";if(parse(r.startDate)>parse(r.endDate))return"계약종료일은 계약시작일 이후여야 합니다."}if(r.manualStatus==="공실"&&!r.vacancyStartDate)return"공실 시작일을 입력해 주세요.";return""}
+    function unitKey(r){return[r.siteName,r.buildingName,r.dong,r.floor,r.unitName].map(function(v){return String(v||"").trim().toLowerCase()}).join("|")}
+    function saveRecord(e){e.preventDefault();var r=collect(), err=validate(r);if(err){alert(err);return}var dup=records.find(function(x){return x.id!==r.id&&unitKey(x)===unitKey(r)});if(dup&&!confirm("같은 사업장 + 건물 + 동 + 층 + 호실 조합이 이미 있습니다. 그래도 저장하시겠습니까?"))return;var i=records.findIndex(function(x){return x.id===r.id});if(i>-1)records[i]=r;else records.push(r);save();renderAll();resetForm();closeModal();tab("rent");toast("계약 정보가 저장되었습니다.")}
+    function editRecord(rid){var r=findRid(rid);if(!r)return;openFormModal("계약 정보 수정");assetOptions();["assetId","siteName","buildingName","dong","floor","unitName","leaseSection","areaM2","pyeong","tenantName","businessNumber","managerName","phone","startDate","endDate","autoRenew","manualStatus","vacancyStartDate","memo"].forEach(function(k){if(document.getElementById(k))setv(k,r[k])});idEl().value=r.id;deposit.value=r.deposit?won(r.deposit):"";monthlyRent.value=r.monthlyRent?won(r.monthlyRent):"";maintenanceFee.value=r.maintenanceFee?won(r.maintenanceFee):"";delBtn.style.display="inline-flex";remainHint()}
+    function deleteCurrent(){var rid=idEl().value;if(!rid)return;if(!confirm("선택한 계약/공실 데이터를 삭제하시겠습니까?"))return;records=records.filter(function(r){return r.id!==rid});save();renderAll();resetForm();closeModal();toast("삭제되었습니다.")}
+    function openModal(rid){parkForm();var r=findRid(rid);if(!r)return;var rows=[["사업장명",r.siteName],["건물명",r.buildingName],["주소",r.address||assetForRecord(r).address||"-"],["동 / 층 / 호실",[r.dong,r.floor,r.unitName].filter(Boolean).join(" / ")],["임대 구간",r.leaseSection],["면적",one(r.areaM2)+"㎡ / "+one(r.pyeong)+"평"],["임차사",r.tenantName||"-"],["담당자 / 연락처",[r.managerName,r.phone].filter(Boolean).join(" / ")||"-"],["보증금",won(r.deposit)+"원"],["월 임대료",won(r.monthlyRent)+"원"],["관리비",won(r.maintenanceFee)+"원"],["계약기간",(r.startDate||"-")+" ~ "+(r.endDate||"-")],["계약 이전 미수금",won(r.priorReceivable)+"원"],["이전 미수 메모",r.priorReceivableMemo||"-"],["잔여일",remText(remain(r))],["공실 시작일",r.vacancyStartDate||"-"],["비고",r.memo||"-"]];modalTitle.innerHTML=esc(r.siteName+" "+r.unitName)+" "+badge(status(r));modalBody.innerHTML='<div class="detail">'+rows.map(function(x){return'<div class="cell"><strong>'+esc(x[0])+'</strong><span>'+esc(x[1])+'</span></div>'}).join("")+'</div><div class="sticky-actions" style="position:static;margin:16px -16px -16px"><button class="btn" onclick="closeModal()">닫기</button><button class="btn primary" onclick="editRecord(\''+r.id+'\')">수정</button></div>';modalBg.classList.add("open")}
+    function closeModal(){parkForm();modalBg.classList.remove("open")}
+    function renderCalendar(){
+      if(!calGrid)return;var y=cal.getFullYear(),m=cal.getMonth();calTitle.textContent=y+"년 "+(m+1)+"월 · "+expiryFilterDays+"일 이내";updateExpiryButtons();var first=new Date(y,m,1),start=new Date(y,m,1-first.getDay()),names=["일","월","화","수","목","금","토"],html=names.map(function(n){return'<div class="dow">'+n+'</div>'}).join("");
+      for(var i=0;i<42;i++){var d=new Date(start);d.setDate(start.getDate()+i);var ds=dateStr(d), ev=records.filter(function(r){var rd=remain(r);return r.endDate===ds&&status(r)!=="공실"&&rd!==null&&rd>=0&&rd<=expiryFilterDays}), cls=(d.getMonth()!==m?" out":"")+(ds===dateStr(today())?" today":"");html+='<div class="day'+cls+'"><div class="numday">'+d.getDate()+'</div>'+ev.map(function(r){return'<button class="event-dot" title="'+esc((r.tenantName||r.unitName)+' · '+r.endDate+' 만기')+'" onclick="openModal(\''+r.id+'\')"></button>'}).join("")+'</div>'}
+      calGrid.innerHTML=html
+    }
+    function moveMonth(n){cal.setMonth(cal.getMonth()+n);renderCalendar()}
+    function showExpiry(n){expiryFilterDays=n;tab("calendar");if(window.expRange)expRange.value=String(n);renderCalendar();renderExpiry()}
+    function changeExpiryRange(){expiryFilterDays=+expRange.value||90;renderCalendar();renderExpiry()}
+    function updateExpiryButtons(){document.querySelectorAll(".exp-filter").forEach(function(b){b.classList.toggle("selected",b.textContent.indexOf(expiryFilterDays+"일")>-1)})}
+    function renderExpiry(){
+      if(!expBody)return;var n=expiryFilterDays;if(window.expRange)expRange.value=String(n);updateExpiryButtons();var list=records.filter(function(r){var d=remain(r);return status(r)!=="공실"&&d!==null&&d>=0&&d<=n}).sort(function(a,b){return remain(a)-remain(b)});
+      expBody.innerHTML=list.length?list.map(function(r){return'<tr onclick="openModal(\''+r.id+'\')"><td><input type="checkbox" '+(r.renewalNeeded?"checked":"")+' onclick="event.stopPropagation();renew(\''+r.id+'\',this.checked)"></td><td>'+esc(r.siteName)+'</td><td>'+esc(r.buildingName)+'</td><td>'+esc(r.unitName)+'</td><td>'+esc(r.tenantName||"-")+'</td><td>'+esc(r.endDate)+'</td><td>'+remText(remain(r))+'</td><td>'+badge(status(r))+'</td><td><button class="btn small" onclick="event.stopPropagation();editRecord(\''+r.id+'\')">수정</button></td></tr>'}).join(""):'<tr><td colspan="9" class="empty">선택한 기간 내 만기 예정 계약이 없습니다.</td></tr>';
+      expMob.innerHTML=list.length?list.map(function(r){return'<article class="mcard" onclick="openModal(\''+r.id+'\')"><h4>'+esc(r.tenantName||r.unitName)+'</h4><dl><dt>위치</dt><dd>'+esc(r.siteName+" "+r.unitName)+'</dd><dt>종료일</dt><dd>'+esc(r.endDate)+'</dd><dt>잔여일</dt><dd>'+remText(remain(r))+'</dd><dt>상태</dt><dd>'+badge(status(r))+'</dd><dt>갱신 필요</dt><dd><input type="checkbox" '+(r.renewalNeeded?"checked":"")+' onclick="event.stopPropagation();renew(\''+r.id+'\',this.checked)"></dd></dl></article>'}).join(""):'<div class="empty">선택한 기간 내 만기 예정 계약이 없습니다.</div>'
+    }
+    function renew(rid,checked){var r=findRid(rid);if(!r)return;r.renewalNeeded=checked;save();renderAll()}
+    function renderStats(){
+      if(!statKpi)return;var all=total(records), leasedList=records.filter(function(r){var s=status(r);return s!=="공실"&&s!=="계약종료"}), le=total(leasedList), vac=total(records.filter(function(r){return status(r)==="공실"})), vr=all.area?Math.round(vac.area/all.area*1000)/10:0;
+      statKpi.innerHTML='<div class="kpi"><small>보증금 총액</small><b>'+won(le.dep)+'원</b><span>임대중 기준</span></div><div class="kpi"><small>월 임대료 총액</small><b>'+won(le.rent)+'원</b><span>임대중 기준</span></div><div class="kpi"><small>공실률</small><b>'+vr+'%</b><span>면적 기준</span></div><div class="kpi"><small>계약 상태별 총건수</small><b>'+records.length+'건</b><span>전체 등록 건</span></div>';
+      donut.style.setProperty("--v",vr);donut.innerHTML='<strong>'+vr+'%</strong><span>공실률</span>';siteRateChart();buildingRentChart();statusChartFn();monthChartFn()
+    }
+    function bars(rows,max){if(!rows.length)return'<div class="empty">표시할 통계 데이터가 없습니다.</div>';return rows.map(function(r){var w=max?Math.max(2,Math.round(r.value/max*100)):0, txt=r.text||(r.value.toLocaleString("ko-KR")+(r.suffix||""));return'<div class="barrow"><strong>'+esc(r.label)+'</strong><div class="track"><div class="fill" style="width:'+w+'%"></div></div><span class="num">'+txt+'</span></div>'}).join("")}
+    function siteRateChart(){var g=group(records,"siteName"), rows=Object.keys(g).map(function(k){var a=total(g[k]), l=total(g[k].filter(function(r){var s=status(r);return s!=="공실"&&s!=="계약종료"}));return{label:k,value:a.area?Math.round(l.area/a.area*1000)/10:0,suffix:"%"}});siteChart.innerHTML=bars(rows,100)}
+    function buildingRentChart(){var g=group(records,"buildingName"), rows=Object.keys(g).map(function(k){var t=total(g[k].filter(function(r){var s=status(r);return s!=="공실"&&s!=="계약종료"}));return{label:k,value:t.rent,text:won(t.rent)+"원"}}), max=Math.max.apply(null,rows.map(function(r){return r.value}).concat([1]));buildingChart.innerHTML=bars(rows,max)}
+    function statusChartFn(){var m={};records.forEach(function(r){var s=status(r);m[s]=(m[s]||0)+1});var rows=Object.keys(m).map(function(k){return{label:k,value:m[k],suffix:"건"}}), max=Math.max.apply(null,rows.map(function(r){return r.value}).concat([1]));statusChart.innerHTML=bars(rows,max)}
+    function monthChartFn(){var m={};records.forEach(function(r){if(!r.endDate||status(r)==="공실")return;var k=r.endDate.slice(0,7);m[k]=(m[k]||0)+1});var rows=Object.keys(m).sort().slice(0,12).map(function(k){return{label:k,value:m[k],suffix:"건"}}), max=Math.max.apply(null,rows.map(function(r){return r.value}).concat([1]));monthChart.innerHTML=bars(rows,max)}
+    function monthBounds(month){var p=String(month||monthStr(today())).split("-"), y=+p[0], m=+p[1]-1;return{start:new Date(y,m,1),end:new Date(y,m+1,0),year:y,monthIndex:m}}
+    function paymentMonthKey(year,monthIndex){return year+"-"+String(monthIndex+1).padStart(2,"0")}
+    function chargeAmount(r){return num(r.monthlyRent)+num(r.maintenanceFee)}
+    function dueDateForMonth(r,month){var s=parse(r.startDate), b=monthBounds(month);if(!s)return null;var lastDay=new Date(b.year,b.monthIndex+1,0).getDate();return new Date(b.year,b.monthIndex,Math.min(s.getDate(),lastDay))}
+    function contractActiveInMonth(r,month){if(!r.startDate||!r.tenantName||r.manualStatus==="공실")return false;var b=monthBounds(month), s=parse(r.startDate), e=parse(r.endDate)||new Date(9999,11,31);return !!s&&s<=b.end&&e>=b.start&&chargeAmount(r)>0}
+    function paymentEntries(recordId,month){return payments.filter(function(p){return p.recordId===recordId&&p.month===month})}
+    function paymentRows(month){return records.filter(function(r){return contractActiveInMonth(r,month)}).map(function(r){var due=chargeAmount(r), list=paymentEntries(r.id,month).sort(function(a,b){return String(a.paidDate||"").localeCompare(String(b.paidDate||""))}), paid=list.reduce(function(a,p){return a+num(p.amount)},0), unpaid=Math.max(0,due-paid), dueDate=dueDateForMonth(r,month), latest=list.length?list[list.length-1].paidDate:"";return{record:r,tenant:r.tenantName||"-",site:r.siteName,unit:r.unitName,dueDate:dueDate?dateStr(dueDate):"",due:due,paid:paid,latestPaidDate:latest,unpaid:unpaid,status:unpaid<=0?"완납":paid>0?"부분납":"미납"}})}
+    function defaultPaidDay(month){var b=monthBounds(month), todayDay=today().getDate(), lastDay=new Date(b.year,b.monthIndex+1,0).getDate();return Math.min(todayDay,lastDay)}
+    function buildPaidDate(month,dayValue){var b=monthBounds(month), lastDay=new Date(b.year,b.monthIndex+1,0).getDate(), day=Math.max(1,Math.min(lastDay,Number(dayValue)||1));return b.year+"-"+String(b.monthIndex+1).padStart(2,"0")+"-"+String(day).padStart(2,"0")}
+    function selectedPaymentCompanies(){var checked=Array.from(document.querySelectorAll('input[name="payCompanyFilter"]:checked')).map(function(el){return el.value}).filter(Boolean);return checked}
+    function updatePayCompanySummary(){var summary=document.getElementById("payCompanySummary");if(!summary)return;var selected=selectedPaymentCompanies();summary.textContent=selected.length?selected.join(", "):"전체 회사"}
+    function togglePayCompanyPopup(force){var popup=document.getElementById("payCompanyPopup");if(!popup)return;var open=typeof force==="boolean"?force:!popup.classList.contains("open");popup.classList.toggle("open",open)}
+    function handleOutsidePayCompanyPopup(e){var wrap=document.querySelector(".company-filter");if(!wrap)return;if(!wrap.contains(e.target))togglePayCompanyPopup(false)}
+    function syncPayCompanyAllState(){var allEl=document.getElementById("payCompanyAll");if(!allEl)return;var items=Array.from(document.querySelectorAll('input[name="payCompanyFilter"]'));allEl.checked=!items.length||items.every(function(el){return el.checked})}
+    function toggleAllPaymentCompanies(checked){document.querySelectorAll('input[name="payCompanyFilter"]').forEach(function(el){el.checked=checked});syncPayCompanyAllState();updatePayCompanySummary();renderPayments()}
+    function paymentCompanyOptions(){var wrap=document.getElementById("payCompanyChecks");if(!wrap)return;var prev=selectedPaymentCompanies();var names=Array.from(new Set(records.map(function(r){return r.tenantName}).filter(Boolean))).sort(function(a,b){return a.localeCompare(b,"ko")});wrap.innerHTML='<label class="checkitem"><input type="checkbox" id="payCompanyAll" '+(!prev.length?'checked':'')+' onchange="toggleAllPaymentCompanies(this.checked)"> 전체 회사</label>'+names.map(function(n){var checked=!prev.length||prev.indexOf(n)>-1?'checked':'';return'<label class="checkitem"><input type="checkbox" name="payCompanyFilter" value="'+esc(n)+'" '+checked+' onchange="syncPayCompanyAllState();updatePayCompanySummary();renderPayments()"> '+esc(n)+'</label>'}).join("");syncPayCompanyAllState();updatePayCompanySummary()}
+    function paymentYearRange(){var years=records.map(function(r){return parse(r.startDate)?parse(r.startDate).getFullYear():null}).concat(payments.map(function(p){return parse(p.paidDate)?parse(p.paidDate).getFullYear():null})).filter(Boolean);years.push(today().getFullYear());return{min:Math.min.apply(null,years),max:Math.max.apply(null,years)}}
+    function paymentDateOptions(){var yearEl=document.getElementById("payYear"), monthEl=document.getElementById("payMonthSelect");if(!yearEl||!monthEl)return;var range=paymentYearRange(), curYear=yearEl.value||String(payCal.getFullYear()), curMonth=monthEl.value||String(payCal.getMonth()+1);var yearHtml='';for(var y=range.min;y<=range.max;y++)yearHtml+='<option value="'+y+'">'+y+'년</option>';yearEl.innerHTML=yearHtml;yearEl.value=curYear;monthEl.innerHTML=Array.from({length:12},function(_,i){return'<option value="'+(i+1)+'">'+(i+1)+'월</option>'}).join("");monthEl.value=curMonth}
+    function currentPaymentMonth(){var yearEl=document.getElementById("payYear"), monthEl=document.getElementById("payMonthSelect"), y=yearEl&&yearEl.value?+yearEl.value:payCal.getFullYear(), m=monthEl&&monthEl.value?+monthEl.value-1:payCal.getMonth();return paymentMonthKey(y,m)}
+    function receivableRange(){
+      var fromEl=document.getElementById("arFrom"), toEl=document.getElementById("arTo");
+      var current=dateStr(today()).slice(0,7);
+      var baseFrom="2025-10";
+      var started=records.map(function(r){return r.startDate?String(r.startDate).slice(0,7):""}).filter(Boolean).sort();
+      var earliest=started.length?started[0]:baseFrom;
+      var defaultFrom=earliest>baseFrom?earliest:baseFrom;
+      if(fromEl&&!fromEl.value)fromEl.value=defaultFrom;
+      if(toEl&&!toEl.value)toEl.value=current;
+      var from=fromEl&&fromEl.value?fromEl.value:defaultFrom, to=toEl&&toEl.value?toEl.value:current;
+      if(from>to){var tmp=from;from=to;to=tmp;if(fromEl)fromEl.value=from;if(toEl)toEl.value=to}
+      return{from:from,to:to}
+    }
+    function monthRangeList(from,to){var cur=monthBounds(from).start, end=monthBounds(to).start, list=[];while(cur<=end){list.push(monthStr(cur));cur.setMonth(cur.getMonth()+1)}return list}
+    function renderPaymentYearOverview(year){var box=document.getElementById("payYearOverview");if(!box)return;var html='';for(var m=0;m<12;m++){var rows=paymentRowsFiltered(paymentMonthKey(year,m)), due=rows.reduce(function(a,x){return a+x.due},0), paid=rows.reduce(function(a,x){return a+x.paid},0), unpaid=rows.reduce(function(a,x){return a+x.unpaid},0);html+='<div class="year-month-card"><strong>'+year+'년 '+(m+1)+'월</strong><b>'+won(due)+'원</b><span>입금 '+won(paid)+'원 · 미납 '+won(unpaid)+'원</span></div>'}box.innerHTML=html}
+    function receivableYearRows(rangeMonths){
+      return records.filter(function(r){
+        return r.tenantName && r.manualStatus!=="공실" && (!selectedPaymentCompanies().length || selectedPaymentCompanies().indexOf(r.tenantName)>-1);
+      }).map(function(r){
+        var months=[], recovered=0, receivable=num(r.priorReceivable), latestDate="";
+        rangeMonths.forEach(function(key){
+          if(!contractActiveInMonth(r,key)){
+            months.push(null);
+          }else{
+            var list=paymentEntries(r.id,key).slice().sort(function(a,b){return String(a.paidDate||"").localeCompare(String(b.paidDate||""))});
+            var due=chargeAmount(r), paid=list.reduce(function(a,p){if(!latestDate||String(p.paidDate||"")>latestDate)latestDate=p.paidDate||latestDate;return a+num(p.amount)},0), unpaid=Math.max(0,due-paid);
+            months.push({due:due,paid:paid,unpaid:unpaid,entries:list.map(function(p){return{paidDate:p.paidDate||"",amount:num(p.amount)}})});
+            recovered+=paid;
+            receivable+=unpaid;
+          }
+        });
+        return{record:r,months:months,recovered:recovered,latestDate:latestDate,receivable:receivable};
+      }).filter(function(x){return x.months.some(function(m){return !!m})});
+    }
+    function receivableCellHtml(m){
+      if(!m)return'-';
+      if(!m.entries||!m.entries.length){
+        return'<span class="recv-empty" title="청구 '+won(m.due)+'원 · 회수 0원 · 미수 '+won(m.unpaid)+'원">0</span>';
+      }
+      return m.entries.map(function(p){
+        return'<span class="recv-entry" title="청구 '+won(m.due)+'원 · 회수 '+won(p.amount)+'원 · 미수 '+won(m.unpaid)+'원"><span class="date">'+esc(p.paidDate||"-")+'</span><span class="amt">'+won(p.amount)+'</span></span>';
+      }).join('')+(m.unpaid>0?'<span class="recv-sub">미수 '+won(m.unpaid)+'</span>':'');
+    }
+    function receivableCellText(m){
+      if(!m)return'-';
+      if(!m.entries||!m.entries.length)return'입금 없음 / 0원';
+      return m.entries.map(function(p){return (p.paidDate||'-')+' '+won(p.amount)+'원';}).join(' | ');
+    }
+    function receivableExportState(){
+      var showContract=(document.getElementById("payArShowContract")||{}).checked!==false, range=receivableRange(), months=monthRangeList(range.from,range.to), rows=receivableYearRows(months);
+      return{showContract:showContract,range:range,months:months,rows:rows};
+    }
+    function receivableContractLabel(r){
+      return [r.siteName,r.buildingName,r.unitName].filter(Boolean).join(' / ');
+    }
+    function receivableTotalData(rows,months){
+      var totals={deposit:0,rent:0,prior:0,recovered:0,receivable:0,months:Array(months.length).fill(0)};
+      rows.forEach(function(x){
+        totals.deposit+=num(x.record.deposit);
+        totals.rent+=num(x.record.monthlyRent);
+        totals.prior+=num(x.record.priorReceivable);
+        totals.recovered+=x.recovered;
+        totals.receivable+=x.receivable;
+        x.months.forEach(function(m,idx){if(m)totals.months[idx]+=m.paid;});
+      });
+      return totals;
+    }
+    function openPriorReceivableModal(recordId){
+      var r=findRid(recordId);
+      if(!r){alert("대상 계약을 찾지 못했습니다.");return}
+      parkForm();
+      modalTitle.textContent='계약 이전 미수금 입력';
+      modalBody.innerHTML=''
+        +'<input type="hidden" id="priorReceivableRecordId" value="'+esc(r.id)+'">'
+        +'<div class="grid kpis">'
+        +'<div class="kpi"><small>임차사</small><b>'+esc(r.tenantName||"-")+'</b><span>'+esc(r.siteName+' · '+r.unitName)+'</span></div>'
+        +'<div class="kpi"><small>현재 계약기간</small><b style="font-size:18px">'+esc((r.startDate||"-")+' ~ '+(r.endDate||"-"))+'</b><span>연장 전 미납분 별도 관리</span></div>'
+        +'<div class="kpi"><small>등록 금액</small><b>'+won(r.priorReceivable)+'원</b><span>계약 시작일 이전 발생분</span></div>'
+        +'</div>'
+        +'<div class="form" style="margin-top:14px">'
+        +'<div><label>계약 이전 미수금(원)</label><input id="priorReceivableInput" class="field" inputmode="numeric" oninput="moneyInput(this)" value="'+(num(r.priorReceivable)?won(r.priorReceivable):"")+'"></div>'
+        +'<div class="wide"><label>메모</label><textarea id="priorReceivableMemoInput" class="field" style="min-height:108px" placeholder="예: 재계약 이전 2개월 체납&#10;보증금 상계 예정">'+esc(r.priorReceivableMemo||"")+'</textarea></div>'
+        +'</div>'
+        +'<div class="sticky-actions" style="position:static;margin:16px -16px -16px"><button class="btn" onclick="closeModal()">닫기</button><button class="btn primary" onclick="savePriorReceivable()">저장</button></div>';
+      modalBg.classList.add("open");
+    }
+    function savePriorReceivable(){
+      var rid=(priorReceivableRecordId||{}).value, r=findRid(rid);
+      if(!r){alert("대상 계약을 찾지 못했습니다.");return}
+      r.priorReceivable=num((priorReceivableInput||{}).value);
+      r.priorReceivableMemo=((priorReceivableMemoInput||{}).value||"").trim();
+      save();renderAll();closeModal();toast("계약 이전 미수금을 저장했습니다.");
+    }
+    function receivableMonthTarget(x,months){
+      var current=currentPaymentMonth();
+      if(months.indexOf(current)>-1&&contractActiveInMonth(x.record,current))return current;
+      for(var i=months.length-1;i>=0;i--)if(x.months[i])return months[i];
+      return current;
+    }
+    function printReceivablePdf(){
+      var state=receivableExportState(), totals=receivableTotalData(state.rows,state.months), label=state.range.from+' ~ '+state.range.to, colCount=6+(state.showContract?1:0)+state.months.length+2;
+      var head='<tr><th>No.</th><th>거래처</th>'+(state.showContract?'<th>계약 내용</th>':'')+'<th>보증금(원)</th><th>임대료(월)</th><th>계약 이전 미수금(원)</th>'+state.months.map(function(m){var p=m.split("-");return'<th><span style="display:block">'+p[0]+'년</span><span style="display:block">'+Number(p[1])+'월</span></th>'}).join('')+'<th>회수금액(원)</th><th>미수금액(원)</th></tr>';
+      var body=state.rows.length?state.rows.map(function(x,i){return'<tr><td>'+(i+1)+'</td><td>'+esc(x.record.tenantName)+'</td>'+(state.showContract?'<td>'+esc(receivableContractLabel(x.record))+'</td>':'')+'<td class="num">'+won(x.record.deposit)+'</td><td class="num">'+won(x.record.monthlyRent)+'</td><td class="num">'+won(x.record.priorReceivable)+'</td>'+x.months.map(function(m){return'<td>'+(m?receivableCellText(m).split(' | ').join('<br>'):'-')+'</td>'}).join('')+'<td class="num">'+won(x.recovered)+'</td><td class="num">'+won(x.receivable)+'</td></tr>'}).join(''):'<tr><td colspan="'+colCount+'" style="padding:24px;text-align:center">선택한 조건의 미수금 현황이 없습니다.</td></tr>';
+      var foot=state.rows.length?'<tfoot><tr><td colspan="'+(state.showContract?3:2)+'">합계</td><td class="num">'+won(totals.deposit)+'</td><td class="num">'+won(totals.rent)+'</td><td class="num">'+won(totals.prior)+'</td>'+totals.months.map(function(v){return'<td class="num">'+won(v)+'</td>'}).join('')+'<td class="num">'+won(totals.recovered)+'</td><td class="num">'+won(totals.receivable)+'</td></tr></tfoot>':'';
+      var html='<!DOCTYPE html><html lang="ko"><head><meta charset="UTF-8"><title>미수금 현황 출력</title><style>@page{size:A4 landscape;margin:10mm}body{font-family:Malgun Gothic,Arial,sans-serif;color:#111827;margin:0}h1{font-size:20px;margin:0 0 6px}.sub{margin:0 0 12px;color:#64748b;font-size:12px}table{width:100%;border-collapse:collapse;font-size:10px}th,td{border:1px solid #d7dde5;padding:5px;text-align:center;vertical-align:top}th{background:#e9f0f7;font-weight:800}.num{text-align:right}tbody tr:nth-child(even){background:#f8fafc}tfoot td{background:#e9f0f7;font-weight:800}</style></head><body><h1>미수금 현황</h1><p class="sub">'+esc(label)+' 기준 업체별 계약 및 월별 입금/미수 현황</p><table><thead>'+head+'</thead><tbody>'+body+'</tbody>'+foot+'</table></body></html>', w=window.open("","receivablePrint","width=1280,height=900");if(!w){alert("팝업이 차단되었습니다. 팝업 허용 후 다시 시도해 주세요.");return}w.document.open();w.document.write(html);w.document.close();w.focus();setTimeout(function(){w.print()},300);
+    }
+    function exportReceivableExcel(){
+      var state=receivableExportState(), totals=receivableTotalData(state.rows,state.months), headers=['No.','거래처'].concat(state.showContract?['계약 내용']:[]).concat(['보증금(원)','임대료(월)','계약 이전 미수금(원)']).concat(state.months.map(function(m){var p=m.split("-");return p[0]+'년 '+Number(p[1])+'월';})).concat(['회수금액(원)','미수금액(원)']);
+      var csv=[headers.join(",")].concat(state.rows.map(function(x,i){return [i+1,x.record.tenantName].concat(state.showContract?[receivableContractLabel(x.record)]:[]).concat([won(x.record.deposit),won(x.record.monthlyRent),won(x.record.priorReceivable)]).concat(x.months.map(function(m){return receivableCellText(m);})).concat([won(x.recovered),won(x.receivable)]).map(function(v){return '"'+String(v).replace(/"/g,'""')+'"';}).join(",");}));
+      if(state.rows.length)csv.push([ '합계','' ].concat(state.showContract?['']:[]).concat([won(totals.deposit),won(totals.rent),won(totals.prior)]).concat(totals.months.map(function(v){return won(v);})).concat([won(totals.recovered),won(totals.receivable)]).map(function(v){return '"'+String(v).replace(/"/g,'""')+'"';}).join(","));
+      var blob=new Blob(["\ufeff"+csv.join("\r\n")],{type:"text/csv;charset=utf-8"}), url=URL.createObjectURL(blob), a=document.createElement("a");a.href=url;a.download="미수금현황_"+state.range.from+"_to_"+state.range.to+".csv";document.body.appendChild(a);a.click();a.remove();URL.revokeObjectURL(url);toast("미수금 현황 엑셀 파일을 저장했습니다.");
+    }
+    function renderReceivables(){
+      var head=document.getElementById("payArHead"), body=document.getElementById("payArBody"), foot=document.getElementById("payArFoot"), caption=document.getElementById("payReceivableCaption"), showContract=(document.getElementById("payArShowContract")||{}).checked!==false;
+      if(!head||!body||!foot||!caption)return;
+      var range=receivableRange(), months=monthRangeList(range.from,range.to), rows=receivableYearRows(months);
+      caption.textContent=range.from+' ~ '+range.to+' 기준 업체별 계약 및 월별 입금/미수 현황 (VAT 별도)';
+      head.innerHTML='<tr><th>No.</th><th>거래처</th>'+(showContract?'<th>계약 내용</th>':'')+'<th class="num">보증금(원)</th><th class="num">임대료(월)</th><th class="num">계약 이전 미수금(원)</th>'+months.map(function(m){var p=m.split("-");return'<th><span style="display:block">'+p[0]+'년</span><span class="muted" style="display:block">'+Number(p[1])+'월</span></th>'}).join('')+'<th class="num">회수금액(원)</th><th class="num">미수금액(원)</th></tr>';
+      if(!rows.length){body.innerHTML='<tr><td colspan="'+(7+months.length+(showContract?1:0))+'" class="empty">선택한 조건의 미수금 현황이 없습니다.</td></tr>';foot.innerHTML='';return}
+      body.innerHTML=rows.map(function(x,i){
+        return'<tr class="receivable-row" onclick="openPaymentModal(\''+x.record.id+'\',\''+receivableMonthTarget(x,months)+'\')" title="클릭하면 입금 등록으로 이동합니다.">'
+          +'<td>'+(i+1)+'</td>'
+          +'<td>'+esc(x.record.tenantName)+'</td>'
+          +(showContract?'<td>'+esc(receivableContractLabel(x.record))+'</td>':'')
+          +'<td class="num">'+won(x.record.deposit)+'</td>'
+          +'<td class="num">'+won(x.record.monthlyRent)+'</td>'
+          +'<td class="num recv-cell" onclick="event.stopPropagation();openPriorReceivableModal(\''+x.record.id+'\')" title="계약 이전 미수금 입력">'+(num(x.record.priorReceivable)?won(x.record.priorReceivable):'<span class="muted">입력</span>')+(x.record.priorReceivableMemo?'<span class="hover-note">'+esc(x.record.priorReceivableMemo)+'</span>':'')+'</td>'
+          +x.months.map(function(m,idx){var monthKey=months[idx];return'<td class="recv-cell" onclick="event.stopPropagation();openPaymentModal(\''+x.record.id+'\',\''+monthKey+'\')" title="'+esc(monthKey+' 입금 등록')+'">'+receivableCellHtml(m)+'</td>'}).join('')
+          +'<td class="num">'+won(x.recovered)+'</td>'
+          +'<td class="num">'+won(x.receivable)+'</td>'
+          +'</tr>';
+      }).join('');
+      var totals=receivableTotalData(rows,months);
+      foot.innerHTML='<tr><td colspan="'+(showContract?3:2)+'">합계</td><td class="num">'+won(totals.deposit)+'</td><td class="num">'+won(totals.rent)+'</td><td class="num">'+won(totals.prior)+'</td>'+totals.months.map(function(v){return'<td class="num">'+won(v)+'</td>'}).join('')+'<td class="num">'+won(totals.recovered)+'</td><td class="num">'+won(totals.receivable)+'</td></tr>';
+    }
+    function paymentRowsFiltered(month){var companies=selectedPaymentCompanies();return paymentRows(month).filter(function(x){return !companies.length||companies.indexOf(x.tenant)>-1})}
+    function monthUnpaidSummaryHtml(rows){var items=rows.filter(function(x){return x.unpaid>0});if(!items.length)return'<div class="empty">선택한 월의 미납 내역이 없습니다.</div>';return items.map(function(x){return'<div class="barrow"><strong>'+esc(x.tenant)+'</strong><div class="track"><div class="fill" style="width:'+Math.max(6,Math.min(100,Math.round(x.unpaid/Math.max(x.due,1)*100)))+'%"></div></div><span class="num">'+won(x.unpaid)+'원</span></div>'}).join('')}
+    function overallUnpaidList(){var map={};payments.forEach(normPayment);records.forEach(function(r){if(!r.tenantName||r.manualStatus==="공실")return;map[r.tenantName]=num(map[r.tenantName])+num(r.priorReceivable);if(!r.startDate)return;var start=parse(r.startDate), end=parse(r.endDate)||today(), cursor=new Date(start.getFullYear(),start.getMonth(),1), limit=new Date(today().getFullYear(),today().getMonth(),1);while(cursor<=limit&&cursor<=new Date(end.getFullYear(),end.getMonth(),1)){var m=monthStr(cursor), rows=paymentRows(m).filter(function(x){return x.record.id===r.id});if(rows[0]&&rows[0].unpaid>0){map[r.tenantName]=num(map[r.tenantName])+rows[0].unpaid}cursor.setMonth(cursor.getMonth()+1)}});var keys=Object.keys(map).filter(function(k){return num(map[k])>0}).sort(function(a,b){return map[b]-map[a]});return keys.length?keys.map(function(k){return'<li class="item"><div><b>'+esc(k)+'</b><span>전체 미납 누계</span></div><strong class="num">'+won(map[k])+'원</strong></li>'}).join(""):'<li class="empty">전체 미납 내역이 없습니다.</li>'}
+    function renderPaymentCalendar(month,rows){
+      var grid=document.getElementById("payGrid"), title=document.getElementById("payTitle");
+      if(!grid||!title)return;
+      var b=monthBounds(month);
+      var firstOffset=new Date(b.year,b.monthIndex,1).getDay();
+      var start=new Date(b.year,b.monthIndex,1-firstOffset);
+      var names=["일","월","화","수","목","금","토"];
+      var html=names.map(function(n){return'<div class="dow">'+n+'</div>'}).join("");
+      title.textContent=b.year+"년 "+(b.monthIndex+1)+"월";
+      for(var i=0;i<42;i++){
+        var d=new Date(start);
+        d.setDate(start.getDate()+i);
+        var ds=dateStr(d);
+        var items=rows.filter(function(x){return x.dueDate===ds});
+        var cls=(d.getMonth()!==b.monthIndex?" out":"")+(ds===dateStr(today())?" today":"");
+        var tags=items.map(function(x){
+          return '<button class="event-tag '+(x.unpaid>0?'unpaid':'')+'" title="'+esc(x.tenant+' · 청구 '+won(x.due)+'원 · 입금 '+won(x.paid)+'원')+'" onclick="openPaymentModal(\''+x.record.id+'\',\''+month+'\')">'+esc(x.tenant)+'</button>';
+        }).join("");
+        html+='<div class="day'+cls+'"><div class="numday">'+d.getDate()+'</div>'+tags+'</div>';
+      }
+      grid.innerHTML=html;
+    }
+    function renderPayments(){
+      var yearEl=document.getElementById("payYear");
+      var monthEl=document.getElementById("payMonthSelect");
+      var monthSummaryEl=document.getElementById("payMonthSummary");
+      var overallEl=document.getElementById("payOverallUnpaid");
+      var bodyEl=document.getElementById("payBody");
+      var mobEl=document.getElementById("payMob");
+      if(!yearEl||!monthEl||!monthSummaryEl||!overallEl||!bodyEl||!mobEl)return;
+      paymentCompanyOptions();
+      paymentDateOptions();
+      if(!yearEl.value)yearEl.value=String(payCal.getFullYear());
+      if(!monthEl.value)monthEl.value=String(payCal.getMonth()+1);
+      var month=currentPaymentMonth();
+      payCal=monthBounds(month).start;
+      var rows=paymentRowsFiltered(month);
+      var totalDue=rows.reduce(function(a,x){return a+x.due},0);
+      var totalPaid=rows.reduce(function(a,x){return a+x.paid},0);
+      var totalUnpaid=rows.reduce(function(a,x){return a+x.unpaid},0);
+      var unpaidCount=rows.filter(function(x){return x.unpaid>0}).length;
+      var overall=0;
+      for(var i=0;i<12;i++){
+        overall+=paymentRows(monthStr(new Date(today().getFullYear(),today().getMonth()-i,1))).reduce(function(a,x){return a+x.unpaid},0);
+      }
+      renderPaymentYearOverview(+yearEl.value);
+      renderReceivables();
+      renderPaymentCalendar(month,rows);
+      monthSummaryEl.innerHTML=monthUnpaidSummaryHtml(rows);
+      overallEl.innerHTML=overallUnpaidList();
+      if(!rows.length){
+        bodyEl.innerHTML='<tr><td colspan="10" class="empty">선택한 월의 임대료 관리 대상이 없습니다.</td></tr>';
+        mobEl.innerHTML='<div class="empty">선택한 월의 임대료 관리 대상이 없습니다.</div>';
+        return;
+      }
+      bodyEl.innerHTML=rows.map(function(x){
+        return '<tr>'
+          +'<td>'+esc(x.tenant)+'</td>'
+          +'<td>'+esc(x.site)+'</td>'
+          +'<td>'+esc(x.unit)+'</td>'
+          +'<td>'+esc(x.dueDate||"-")+'</td>'
+          +'<td class="num">'+won(x.due)+'</td>'
+          +'<td>'+esc(x.latestPaidDate||"-")+'</td>'
+          +'<td class="num">'+won(x.paid)+'</td>'
+          +'<td class="num">'+won(x.unpaid)+'</td>'
+          +'<td>'+badge(x.status==="완납"?"임대중":x.status)+'</td>'
+          +'<td><button class="btn small" onclick="openPaymentModal(\''+x.record.id+'\',\''+month+'\')">입금 등록</button></td>'
+          +'</tr>';
+      }).join("");
+      mobEl.innerHTML=rows.map(function(x){
+        return '<article class="mcard"><h4>'+esc(x.tenant)+'</h4><dl>'
+          +'<dt>사업장</dt><dd>'+esc(x.site)+'</dd>'
+          +'<dt>호실</dt><dd>'+esc(x.unit)+'</dd>'
+          +'<dt>납입 예정일</dt><dd>'+esc(x.dueDate||"-")+'</dd>'
+          +'<dt>청구금액</dt><dd>'+won(x.due)+'원</dd>'
+          +'<dt>입금금액</dt><dd>'+won(x.paid)+'원</dd>'
+          +'<dt>미납금액</dt><dd>'+won(x.unpaid)+'원</dd>'
+          +'</dl><br><button class="btn small" onclick="openPaymentModal(\''+x.record.id+'\',\''+month+'\')">입금 등록</button></article>';
+      }).join("");
+    }
+    function movePayMonth(n){var d=monthBounds(currentPaymentMonth()).start, yearEl=document.getElementById("payYear"), monthEl=document.getElementById("payMonthSelect");d.setMonth(d.getMonth()+n);if(yearEl)yearEl.value=String(d.getFullYear());if(monthEl)monthEl.value=String(d.getMonth()+1);renderPayments()}
+    function normPayment(p){p.id=p.id||("PAY-"+Date.now().toString(36)+"-"+Math.random().toString(36).slice(2,6));p.recordId=p.recordId||"";p.month=p.month||monthStr(today());p.paidDate=p.paidDate||"";p.amount=num(p.amount);p.memo=p.memo||"";return p}
+    function paymentModalCandidates(month){
+      return records.filter(function(r){
+        return r.tenantName && contractActiveInMonth(r,month);
+      }).sort(function(a,b){
+        return [a.tenantName,a.siteName,a.unitName].join(" ").localeCompare([b.tenantName,b.siteName,b.unitName].join(" "),"ko");
+      });
+    }
+    function openPaymentModal(recordId,month){
+      var baseMonth=currentPaymentMonth();
+      var m=month||baseMonth;
+      var candidates=paymentModalCandidates(m);
+      var targetRecord=recordId?findRid(recordId):candidates[0]||null;
+      if(targetRecord&&candidates.every(function(r){return r.id!==targetRecord.id;}))targetRecord=candidates[0]||null;
+      parkForm();
+      modalTitle.textContent='입금 등록';
+      if(!targetRecord){
+        modalBody.innerHTML='<div class="empty">등록할 회사를 먼저 선택해 주세요.</div><div class="sticky-actions" style="position:static;margin:16px -16px -16px"><button class="btn" onclick="closeModal()">닫기</button></div>';
+        modalBg.classList.add("open");
+        return;
+      }
+      var current=paymentEntries(targetRecord.id,m);
+      var due=chargeAmount(targetRecord);
+      var paid=current.reduce(function(a,p){return a+num(p.amount)},0);
+      var unpaid=Math.max(0,due-paid);
+      var defaultDay=defaultPaidDay(m);
+      var defaultAmount=paymentDraftMode==="clear"?"":(num(targetRecord.monthlyRent)||due);
+      var historyHtml=current.length?current.map(function(p){
+        return '<tr><td>'+esc(p.paidDate||"-")+'</td><td class="num">'+won(p.amount)+'</td><td>'+esc(p.memo||"-")+'</td><td><button class="btn small danger" onclick="deletePaymentEntry(\''+p.id+'\')">삭제</button></td></tr>';
+      }).join(""):'<tr><td colspan="4" class="empty">입력된 입금 내역이 없습니다.</td></tr>';
+      var companyOptions=candidates.map(function(r){
+        var label=[r.tenantName||"-",r.siteName||"",r.unitName||""].filter(Boolean).join(" · ");
+        return '<option value="'+esc(r.id)+'" '+(r.id===targetRecord.id?'selected':'')+'>'+esc(label)+'</option>';
+      }).join("");
+      modalBody.innerHTML=''
+        +'<input type="hidden" id="payRecordId" value="'+esc(targetRecord.id)+'">'
+        +'<div><label>회사 선택</label><select id="payRecordSelect" class="field" onchange="openPaymentModal(this.value, (document.getElementById(\'payEntryMonth\')||{}).value || \''+esc(m)+'\')">'+companyOptions+'</select></div>'
+        +'<div class="grid kpis">'
+        +'<div class="kpi"><small>회사명</small><b>'+esc(targetRecord.tenantName||"-")+'</b><span>'+esc(targetRecord.siteName+' · '+targetRecord.unitName)+'</span></div>'
+        +'<div class="kpi"><small>청구금액</small><b>'+won(due)+'원</b><span>월 임대료 + 관리비</span></div>'
+        +'<div class="kpi"><small>입금합계</small><b>'+won(paid)+'원</b><span>미납 '+won(unpaid)+'원</span></div>'
+        +'<div class="kpi"><small>대상 월</small><b>'+esc(m)+'</b><span>납입 예정일 '+esc(dateStr(dueDateForMonth(targetRecord,m)))+'</span></div>'
+        +'</div>'
+        +'<div class="form" style="margin-top:14px">'
+        +'<div><label>대상 월</label><input id="payEntryMonth" class="field" type="month" value="'+esc(m)+'"></div>'
+        +'<div><label>입금 년월</label><input id="payMonthInput" class="field" type="month" value="'+esc(m)+'"></div>'
+        +'<div><label>입금일(일자)</label><input id="payDayInput" class="field" type="number" min="1" max="31" value="'+defaultDay+'"></div>'
+        +'<div><label>입금금액(원)</label><input id="payAmountInput" class="field" inputmode="numeric" oninput="moneyInput(this)" value="'+(defaultAmount?won(defaultAmount):"")+'"></div>'
+        +'<div class="wide"><label>메모</label><input id="payMemoInput" class="field"></div>'
+        +'</div>'
+        +'<div class="section" style="margin-top:14px"><h3>기등록 입금 내역</h3><div class="tablebox"><table><thead><tr><th>입금일</th><th class="num">입금금액(원)</th><th>메모</th><th>삭제</th></tr></thead><tbody>'+historyHtml+'</tbody></table></div></div>'
+        +'<div class="sticky-actions" style="position:static;margin:16px -16px -16px"><button class="btn" onclick="closeModal()">닫기</button><button class="btn primary" onclick="savePaymentEntry()">저장</button></div>';
+      paymentDraftMode="default";
+      modalBg.classList.add("open");
+    }
+    function savePaymentEntry(){var recordId=payRecordId.value, targetMonth=(payEntryMonth&&payEntryMonth.value)||monthStr(today()), paidMonth=(payMonthInput&&payMonthInput.value)||targetMonth, amount=num(payAmountInput.value), day=Number((payDayInput||{}).value||0);if(!recordId){alert("대상 계약이 없습니다.");return}if(!targetMonth){alert("대상 월을 입력해 주세요.");return}if(!paidMonth){alert("입금 년월을 입력해 주세요.");return}if(!day){alert("입금일의 일자를 입력해 주세요.");return}if(!amount){alert("입금금액을 입력해 주세요.");return}payments.push(normPayment({recordId:recordId,month:targetMonth,paidDate:buildPaidDate(paidMonth,day),amount:amount,memo:payMemoInput.value.trim()}));save();renderAll();openPaymentModal(recordId,targetMonth);toast("입금 내역을 저장했습니다.")}
+    function deletePaymentEntry(pid){if(!confirm("이 입금 내역을 삭제하시겠습니까?"))return;var p=payments.find(function(x){return x.id===pid}), recordId=p?p.recordId:"", month=p?p.month:(payEntryMonth?payEntryMonth.value:monthStr(today()));payments=payments.filter(function(x){return x.id!==pid});save();renderAll();paymentDraftMode="clear";openPaymentModal(recordId,month);toast("입금 내역을 삭제했습니다.")}
+    function backupPayload(){return{backupType:"부동산 임대관리 백업",version:5,exportedAt:new Date().toISOString(),storageKey:KEY,records:records,assets:assets,investments:investments,payments:payments,hiddenColumns:hiddenCols,restorePoints:restorePoints.map(function(p){return{id:p.id,createdAt:p.createdAt,label:p.label}})}}
+    function backupString(){return JSON.stringify(backupPayload(),null,2)}
+    function openBackupModal(){parkForm();modalTitle.textContent="백업/복구";modalBody.innerHTML='<div class="grid kpis"><div class="kpi"><small>현재 저장 건수</small><b>'+records.length+'건</b><span>계약 및 공실 포함</span></div><div class="kpi"><small>백업 방식</small><b style="font-size:18px">파일 / 텍스트 / 엑셀표</b><span>인터넷 없이 복구 가능</span></div></div><div class="section" style="margin-top:12px"><h3>백업</h3><div class="tools"><button class="btn primary" onclick="exportJson()">백업 파일 저장</button><button class="btn" onclick="makeBackupText()">백업 텍스트 만들기</button><button class="btn" onclick="copyBackupText()">백업 텍스트 복사</button></div></div><div class="section"><h3>엑셀 데이터 변환</h3><div class="tools"><input id="excelFile" class="field" type="file" accept=".csv,.txt,.tsv" onchange="importExcelLikeFile(event)"></div><p class="muted">엑셀에서 표 범위를 복사해 아래 칸에 붙여넣거나, 엑셀 파일을 CSV로 저장한 뒤 불러오세요.</p><label for="excelText">엑셀 붙여넣기 데이터</label><textarea id="excelText" class="field" style="min-height:130px" placeholder="구분, No, 임대 구간, 면적(㎡), 평형, 임차사, 보증금(매매가), 임대료(月), 관리비(月), 계약시작, 계약종료, 잔여일, 비고 열을 포함해 붙여넣으세요."></textarea><div class="tools" style="margin-top:10px"><button class="btn primary" onclick="convertExcelTextToBackup()">엑셀 데이터 변환</button><button class="btn" onclick="document.getElementById(\'excelText\').value=\'\'">엑셀 텍스트 지우기</button></div></div><div class="section"><h3>복구</h3><div class="tools"><input id="importFile" class="field" type="file" accept="application/json,.json,.txt" onchange="importJson(event)"></div><p class="muted">백업 파일을 선택하거나 아래 칸에 백업 텍스트를 붙여넣고 복구하세요.</p><label for="backupText">백업 텍스트</label><textarea id="backupText" class="field" style="min-height:170px" placeholder="백업 텍스트를 붙여넣으세요."></textarea><div class="tools" style="margin-top:10px"><button class="btn primary" onclick="restoreFromText()">텍스트로 복구</button><button class="btn" onclick="document.getElementById(\'backupText\').value=\'\'">텍스트 지우기</button></div></div><div class="section"><h3>초기화</h3><div class="tools"><button class="btn warn" onclick="resetApp()">초기화</button><button class="btn primary" onclick="loadSample(true)">샘플데이터 불러오기</button><button class="btn danger" onclick="clearData()">전체 데이터 삭제</button></div><p class="muted">초기화는 기본 샘플 데이터로 다시 시작합니다. 전체 데이터 삭제는 빈 상태로 만듭니다.</p></div>';modalBg.classList.add("open")}
+    function exportJson(){var blob=new Blob([backupString()],{type:"application/json"}),url=URL.createObjectURL(blob),a=document.createElement("a");a.href=url;a.download="부동산_임대관리_백업_"+dateStr(today())+".json";document.body.appendChild(a);a.click();a.remove();URL.revokeObjectURL(url);toast("백업 파일을 저장했습니다.")}
+    function makeBackupText(){var box=document.getElementById("backupText");if(!box){openBackupModal();box=document.getElementById("backupText")}box.value=backupString();box.focus();box.select();toast("백업 텍스트를 만들었습니다.")}
+    function copyBackupText(){var box=document.getElementById("backupText");if(!box){openBackupModal();box=document.getElementById("backupText")}if(!box.value)makeBackupText();box.focus();box.select();try{document.execCommand("copy");toast("백업 텍스트를 복사했습니다.")}catch(e){toast("복사되지 않으면 선택된 텍스트를 직접 복사하세요.")}}
+    function importExcelLikeFile(e){var f=e.target.files[0];if(!f)return;var rd=new FileReader();rd.onload=function(){var box=document.getElementById("excelText");if(box)box.value=rd.result;convertExcelTextToBackup();e.target.value=""};rd.readAsText(f,"UTF-8")}
+    function convertExcelTextToBackup(){var box=document.getElementById("excelText"), out=document.getElementById("backupText");if(!box||!box.value.trim()){alert("엑셀에서 복사한 표 데이터나 CSV 내용을 붙여넣어 주세요.");return}try{var converted=excelTextToRecords(box.value);if(!converted.length){alert("변환할 행을 찾지 못했습니다. 제목 행과 데이터 행을 함께 붙여넣어 주세요.");return}if(!out){openBackupModal();out=document.getElementById("backupText")}out.value=JSON.stringify({backupType:"부동산 임대관리 백업",version:1,exportedAt:new Date().toISOString(),storageKey:KEY,records:converted},null,2);out.focus();out.select();toast(converted.length+"건을 백업 텍스트로 변환했습니다.")}catch(e){alert("엑셀 데이터 변환에 실패했습니다.\n오류: "+e.message)}}
+    function excelTextToRecords(text){var rows=parseTableText(text).filter(function(r){return r.some(function(c){return String(c||"").trim()})});if(!rows.length)return[];var headerIndex=rows.findIndex(function(r){return r.join(" ").indexOf("임대")>-1&&r.join(" ").indexOf("면적")>-1});if(headerIndex<0)headerIndex=0;var headers=rows[headerIndex].map(cleanCell), data=rows.slice(headerIndex+1), idx=function(names){for(var i=0;i<headers.length;i++){var h=headers[i].replace(/\s/g,"");for(var j=0;j<names.length;j++){if(h.indexOf(names[j])>-1)return i}}return-1}, map={category:idx(["구분"]),no:idx(["No","NO","번호"]),section:idx(["임대구간","구간"]),area:idx(["면적"]),pyeong:idx(["평형","평"]),tenant:idx(["임차사","임차인"]),deposit:idx(["보증금","매매가"]),rent:idx(["임대료","월세"]),fee:idx(["관리비"]),start:idx(["계약시작","시작"]),end:idx(["계약종료","종료"]),memo:idx(["비고"])};var lastCategory="", result=[];data.forEach(function(row,n){var category=cellAt(row,map.category)||lastCategory;if(category)lastCategory=category;var section=cellAt(row,map.section), tenant=cellAt(row,map.tenant), area=num(cellAt(row,map.area)), pyeong=num(cellAt(row,map.pyeong))||py(area), start=toDateText(cellAt(row,map.start)), end=toDateText(cellAt(row,map.end)), memo=cellAt(row,map.memo), no=cellAt(row,map.no)||String(n+1);if(!section&&!area&&!tenant)return;if(tenant==="전체"&&!start&&!end&&num(cellAt(row,map.rent))===0){memo=(memo?memo+" / ":"")+"전체 요약 행: "+section+" / 면적 "+one(area)+"㎡ / 평형 "+one(pyeong)+"평 / 매매가 "+won(cellAt(row,map.deposit))+"원";return}var vacant=section.indexOf("공실")>-1||(!start&&!end&&!num(cellAt(row,map.rent)));var parts=parseSection(section);result.push({id:"REC-excel-"+Date.now().toString(36)+"-"+n+"-"+Math.random().toString(36).slice(2,5),createdAt:dateStr(today()),category:category||"미지정",siteName:category||"미지정",buildingName:category||"미지정",dong:parts.dong,floor:parts.floor,unitName:parts.unitName||section||("구역 "+no),leaseSection:section,areaM2:area,pyeong:pyeong,tenantName:vacant?"":tenant,businessNumber:"",managerName:"",phone:"",deposit:num(cellAt(row,map.deposit)),monthlyRent:num(cellAt(row,map.rent)),maintenanceFee:num(cellAt(row,map.fee)),startDate:start,endDate:end,autoRenew:"아니오",manualStatus:vacant?"공실":"임대중",vacancyStartDate:vacant?dateStr(today()):"",renewalNeeded:false,memo:vacant&&tenant?((memo?memo+" / ":"")+"기존 표 임차사 표시: "+tenant):memo})});return result}
+    function parseTableText(text){var raw=String(text||"").replace(/\r\n/g,"\n").replace(/\r/g,"\n"), firstLine=raw.split("\n")[0]||"", delimiter=(firstLine.split("\t").length>=firstLine.split(",").length)?"\t":",";return parseDelimited(raw,delimiter)}
+    function parseDelimited(text,delimiter){var rows=[], row=[], cur="", quote=false;for(var i=0;i<text.length;i++){var ch=text[i], next=text[i+1];if(ch==='"'&&quote&&next==='"'){cur+='"';i++;continue}if(ch==='"'){quote=!quote;continue}if(ch===delimiter&&!quote){row.push(cur);cur="";continue}if(ch==="\n"&&!quote){row.push(cur);rows.push(row);row=[];cur="";continue}cur+=ch}row.push(cur);rows.push(row);return rows}
+    function cleanCell(v){return String(v==null?"":v).replace(/^"|"$/g,"").trim()}
+    function cellAt(row,i){return i<0?"":cleanCell(row[i])}
+    function toDateText(v){v=cleanCell(v);if(!v)return"";v=v.replace(/[./]/g,"-");var m=v.match(/(\d{4})-(\d{1,2})-(\d{1,2})/);return m?m[1]+"-"+String(+m[2]).padStart(2,"0")+"-"+String(+m[3]).padStart(2,"0"):""}
+    function parseSection(section){var dong="", floor="", unit=cleanCell(section);var dm=unit.match(/([가-힣A-Z]+\s*동|\([A-Z]\s*동\)|[A-Z]동)/);if(dm)dong=dm[0].replace(/\s/g,"");var fm=unit.match(/(B?\d+\s*(?:~\s*\d+)?층|지하\s*\d+층)/);if(fm)floor=fm[0].replace(/\s/g,"");return{dong:dong,floor:floor,unitName:unit}}
+    function extractJsonText(text){var cleaned=String(text||"").trim();cleaned=cleaned.replace(/^```(?:json)?/i,"").replace(/```$/,"").trim();var firstObj=cleaned.indexOf("{"), lastObj=cleaned.lastIndexOf("}"), firstArr=cleaned.indexOf("["), lastArr=cleaned.lastIndexOf("]");if(firstObj>-1&&lastObj>firstObj)return cleaned.slice(firstObj,lastObj+1);if(firstArr>-1&&lastArr>firstArr)return cleaned.slice(firstArr,lastArr+1);return cleaned}
+    function readBackupObject(text){var p=JSON.parse(extractJsonText(text));return Array.isArray(p)?{records:p,assets:[],investments:[],payments:[]}:{records:p.records,assets:p.assets||[],investments:p.investments||[],payments:p.payments||[],hiddenColumns:p.hiddenColumns||{},restorePoints:p.restorePoints||[]}}
+    function readBackupText(text){var p=readBackupObject(text);if(!Array.isArray(p.records))throw Error("records 배열이 없습니다.");return{records:p.records.map(norm),assets:Array.isArray(p.assets)?p.assets.map(normAsset):[],investments:Array.isArray(p.investments)?p.investments.map(normInvestment):[],payments:Array.isArray(p.payments)?p.payments.map(normPayment):[],hiddenColumns:p.hiddenColumns||{},restorePoints:Array.isArray(p.restorePoints)?p.restorePoints:[]}}
+    function restoreRecords(next,msg){records=next.records||next;assets=next.assets||assets;investments=next.investments||investments;payments=next.payments||payments;hiddenCols=next.hiddenColumns||hiddenCols;if(Array.isArray(next.restorePoints)&&next.restorePoints.length&&next.restorePoints[0]&&next.restorePoints[0].data)restorePoints=next.restorePoints;ensureAssetsFromRecords();linkRecordsToAssets();save();renderAll();resetForm();tab("dashboard");toast(msg)}
+    function restoreFromText(){var box=document.getElementById("backupText");if(!box||!box.value.trim()){alert("복구할 백업 텍스트를 붙여넣어 주세요.");return}if(!confirm("백업 텍스트로 현재 데이터를 교체하시겠습니까?"))return;try{restoreRecords(readBackupText(box.value),"백업 텍스트로 복구했습니다.");closeModal()}catch(e){alert("백업 텍스트를 읽지 못했습니다.\n\n확인할 내용:\n1. ```json 같은 코드블록 기호를 빼고 붙여넣기\n2. 중간이 잘리지 않았는지 확인\n3. records 배열이 포함되어 있는지 확인\n\n오류: "+e.message)}}
+    function importJson(e){var f=e.target.files[0];if(!f)return;if(!confirm("선택한 백업 파일로 현재 데이터를 교체하시겠습니까?")){e.target.value="";return}var rd=new FileReader();rd.onload=function(){try{restoreRecords(readBackupText(rd.result),"백업 파일로 복구했습니다.")}catch(x){alert("백업 파일을 읽지 못했습니다.\n오류: "+x.message)}e.target.value=""};rd.readAsText(f,"UTF-8")}
+    function norm(r){r.id=r.id||makeId();r.assetId=r.assetId||"";r.address=r.address||"";r.createdAt=r.createdAt||dateStr(today());r.areaM2=num(r.areaM2);r.pyeong=num(r.pyeong)||py(r.areaM2);r.deposit=num(r.deposit);r.monthlyRent=num(r.monthlyRent);r.maintenanceFee=num(r.maintenanceFee);r.priorReceivable=num(r.priorReceivable);r.priorReceivableMemo=r.priorReceivableMemo||"";r.manualStatus=r.manualStatus||"임대중";r.autoRenew=r.autoRenew||"아니오";r.renewalNeeded=!!r.renewalNeeded;return r}
+    function normAsset(a){var next={id:a.id||makeId(),assetType:a.assetType||"건물",siteName:a.siteName||"",buildingName:a.buildingName||"",address:a.address||"",landAreaM2:num(a.landAreaM2),buildingAreaM2:num(a.buildingAreaM2),grossFloorAreaM2:num(a.grossFloorAreaM2),areaM2:num(a.areaM2),pyeong:num(a.pyeong)||py(a.areaM2),acquiredDate:a.acquiredDate||"",acquisitionPrice:num(a.acquisitionPrice),memo:a.memo||""};next.buildingCoverageRatio=assetCoverage(next);next.floorAreaRatio=assetFar(next);return next}
+    function renderStorage(){if(!storage)return;var raw=(localStorage.getItem(KEY)||"[]")+(localStorage.getItem(ASSET_KEY)||"[]")+(localStorage.getItem(INV_KEY)||"[]")+(localStorage.getItem(PAY_KEY)||"[]")+(localStorage.getItem(SNAP_KEY)||"[]");storage.innerHTML='<div class="grid kpis"><div class="kpi"><small>저장 키</small><b style="font-size:15px">'+KEY+'</b><span>자산 키 '+ASSET_KEY+' · 투자 키 '+INV_KEY+' · 입금 키 '+PAY_KEY+'</span></div><div class="kpi"><small>임대 저장 건수</small><b>'+records.length+'건</b><span>계약 및 공실 포함</span></div><div class="kpi"><small>투자/대여 건수</small><b>'+investments.length+'건</b><span>투자 및 대여 관리</span></div><div class="kpi"><small>입금 저장 건수</small><b>'+payments.length+'건</b><span>회사별 입금 내역</span></div><div class="kpi"><small>복원 지점</small><b>'+restorePoints.length+'개</b><span>앱 내부 시점 저장</span></div><div class="kpi"><small>데이터 크기</small><b>'+raw.length.toLocaleString("ko-KR")+'자</b><span>JSON 문자열 기준</span></div></div>'}
+    function toast(msg){var t=document.getElementById("toast");t.textContent=msg;t.classList.add("show");clearTimeout(toast.timer);toast.timer=setTimeout(function(){t.classList.remove("show")},2300)}
+  </script>
+</body>
+</html>
 
