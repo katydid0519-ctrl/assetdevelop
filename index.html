@@ -43,7 +43,7 @@
     body{background:var(--bg);color:var(--text);font-family:"Pretendard","Noto Sans KR","Malgun Gothic","Apple SD Gothic Neo",Arial,sans-serif;font-size:14px}
     header{height:64px;padding:0 24px;background:#0f172a;box-shadow:0 2px 8px rgba(15,23,42,.18);border-bottom:0}
     h1{font-size:18px;font-weight:600;letter-spacing:0} h1 span{color:#bfdbfe;font-size:13px;font-weight:600}.sub{color:#9ca3af}.brand{gap:12px}.brand-copy h1{display:flex;align-items:baseline;gap:8px;white-space:nowrap}.brand-copy .app-version{color:#93c5fd;font-size:11px;font-weight:700;letter-spacing:.02em}.brand-copy .made-by{color:#cbd5e1;font-size:11px;font-weight:600;opacity:.9}.mark{display:flex;align-items:center;justify-content:center;overflow:hidden;width:48px;height:48px;border:1px solid rgba(147,197,253,.36);border-radius:10px;background:#ffffff;color:#fff;font-size:20px;box-shadow:inset 0 1px 0 rgba(255,255,255,.16)}.mark img{display:block;width:100%;height:100%;object-fit:contain;object-position:center;padding:0;box-sizing:border-box}
-    header .brand h1::after{content:"v2026.05.21.3  ·  Made By. PKM";display:inline-block;margin-left:8px;color:#cbd5e1;font-size:11px;font-weight:700;letter-spacing:.02em;vertical-align:baseline;white-space:nowrap}
+    header .brand h1::after{content:"v2026.05.21.4  ·  Made By. PKM";display:inline-block;margin-left:8px;color:#cbd5e1;font-size:11px;font-weight:700;letter-spacing:.02em;vertical-align:baseline;white-space:nowrap}
     .layout{grid-template-columns:220px minmax(0,1fr);min-height:calc(100vh - 64px)}
     nav{top:64px;height:calc(100vh - 64px);padding:14px 10px;background:#fff;border-right:1px solid var(--line);box-shadow:1px 0 4px rgba(15,23,42,.03);overflow-y:auto;overflow-x:visible;z-index:40}
     .navbtn{position:relative;justify-content:flex-start;gap:8px;margin-bottom:6px;padding:15px 10px 15px 12px;border:0;border-left:3px solid transparent;border-radius:0 10px 10px 0;background:transparent;color:#374151;font-weight:700;white-space:nowrap}
@@ -415,7 +415,7 @@
               <div class="tools" style="justify-content:space-between">
                 <h3>계약서 입력</h3>
                 <div class="tools">
-                  <button class="btn" type="button" onclick="downloadLeaseContractDoc()">문서 저장(.doc)</button>
+                  <button class="btn" type="button" onclick="downloadLeaseContractDoc()">문서 저장(.docx)</button>
                   <button class="btn" type="button" onclick="printLeaseContractPdf()">인쇄 / PDF</button>
                   <button class="btn danger" type="button" onclick="deleteLeaseContractDoc()">삭제</button>
                   <button class="btn primary" type="button" onclick="saveLeaseContractDoc()">저장</button>
@@ -541,7 +541,7 @@
                 <h3>계약서 미리보기</h3>
                 <div class="tools tax-tools">
                   <span class="toolbar-group" data-label="보기"><button class="btn" type="button" onclick="setLeaseContractViewMode('input')">입력 화면으로</button><button class="btn" type="button" id="leasePreviewToggleBtn" onclick="toggleContractPreview('lease')">미리보기 접기</button></span>
-                  <span class="toolbar-group" data-label="저장"><button class="btn" type="button" onclick="downloadLeaseContractDoc()">Word 저장(.doc)</button></span>
+                  <span class="toolbar-group" data-label="저장"><button class="btn" type="button" onclick="downloadLeaseContractDoc()">Word 저장(.docx)</button></span>
                   <span class="toolbar-group" data-label="출력"><button class="btn" type="button" onclick="printLeaseContractPdf()">인쇄 / PDF</button></span>
                   <span class="toolbar-group" data-label="복사"><button class="btn" type="button" onclick="copyLeaseContractTitle()">문서 제목 복사</button><button class="btn primary" type="button" onclick="copyLeaseContractToClipboard()">Word 복사</button></span>
                 </div>
@@ -569,7 +569,7 @@
               <div class="tools" style="justify-content:space-between">
                 <h3>계약서 입력</h3>
                 <div class="tools">
-                  <button class="btn" type="button" onclick="downloadSaleContractDoc()">Word 저장(.doc)</button>
+                  <button class="btn" type="button" onclick="downloadSaleContractDoc()">Word 저장(.docx)</button>
                   <button class="btn" type="button" onclick="printSaleContractPdf()">인쇄 / PDF</button>
                   <button class="btn danger" type="button" onclick="deleteSaleContractDoc()">삭제</button>
                   <button class="btn primary" type="button" onclick="saveSaleContractDoc()">저장</button>
@@ -693,7 +693,7 @@
                 <h3>계약서 미리보기</h3>
                 <div class="tools tax-tools">
                   <span class="toolbar-group" data-label="보기"><button class="btn" type="button" onclick="setSaleContractViewMode('input')">입력 화면으로</button><button class="btn" type="button" id="salePreviewToggleBtn" onclick="toggleContractPreview('sale')">미리보기 접기</button></span>
-                  <span class="toolbar-group" data-label="저장"><button class="btn" type="button" onclick="downloadSaleContractDoc()">Word 저장(.doc)</button></span>
+                  <span class="toolbar-group" data-label="저장"><button class="btn" type="button" onclick="downloadSaleContractDoc()">Word 저장(.docx)</button></span>
                   <span class="toolbar-group" data-label="출력"><button class="btn" type="button" onclick="printSaleContractPdf()">인쇄 / PDF</button></span>
                   <span class="toolbar-group" data-label="복사"><button class="btn" type="button" onclick="copySaleContractTitle()">문서 제목 복사</button><button class="btn primary" type="button" onclick="copySaleContractToClipboard()">Word 복사</button></span>
                 </div>
@@ -2447,6 +2447,107 @@
       body=String(body||"").replace(/width:210mm;min-width:210mm;max-width:210mm;min-height:287mm;margin:0 auto;padding:0/g,"width:184.6mm;min-width:184.6mm;max-width:184.6mm;min-height:271.6mm;margin:0;padding:0").replace(/\bWordSection1\b/g,"Section1");
       return '<!DOCTYPE html><html lang="ko" xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:w="urn:schemas-microsoft-com:office:word" xmlns="http://www.w3.org/TR/REC-html40"><head><meta charset="UTF-8"><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><meta name="ProgId" content="Word.Document"><meta name="Generator" content="Microsoft Word 15"><meta name="Originator" content="Microsoft Word 15"><title>'+esc(title)+'</title><!--[if gte mso 9]><xml><w:WordDocument><w:View>Print</w:View><w:Zoom>100</w:Zoom><w:DoNotOptimizeForBrowser/></w:WordDocument></xml><![endif]--><style>@page Section1{size:595.3pt 841.9pt;margin:36.0pt 36.0pt 36.0pt 36.0pt;mso-header-margin:0pt;mso-footer-margin:0pt;mso-paper-source:0;}div.Section1{page:Section1;}body{margin:0;background:#fff;font-family:BatangChe,바탕체,Batang,바탕,serif;}#contract-preview{width:184.6mm!important;min-width:184.6mm!important;max-width:184.6mm!important;min-height:271.6mm!important;margin:0!important;padding:0!important;box-sizing:border-box!important;}#contract-preview,#contract-preview *{font-family:BatangChe,바탕체,Batang,바탕,serif!important;}table{mso-table-lspace:0pt;mso-table-rspace:0pt;border-collapse:collapse;white-space:nowrap;word-break:keep-all;font-family:BatangChe,바탕체,Batang,바탕,serif;}</style></head><body><!--StartFragment-->'+body+'<!--EndFragment--></body></html>';
     }
+    var DOCX_MIME="application/vnd.openxmlformats-officedocument.wordprocessingml.document";
+    var zipCrcTable=null;
+    function xmlEsc(value){return String(value==null?"":value).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;").replace(/'/g,"&apos;")}
+    function zipBytes(text){return new TextEncoder().encode(String(text))}
+    function getZipCrcTable(){
+      if(zipCrcTable)return zipCrcTable;
+      zipCrcTable=[];
+      for(var n=0;n<256;n++){
+        var c=n;
+        for(var k=0;k<8;k++)c=(c&1)?(0xedb88320^(c>>>1)):(c>>>1);
+        zipCrcTable[n]=c>>>0;
+      }
+      return zipCrcTable;
+    }
+    function zipCrc32(bytes){
+      var table=getZipCrcTable(), crc=0xffffffff;
+      for(var i=0;i<bytes.length;i++)crc=table[(crc^bytes[i])&255]^(crc>>>8);
+      return (crc^0xffffffff)>>>0;
+    }
+    function zipU16(value){return [value&255,(value>>>8)&255]}
+    function zipU32(value){return [value&255,(value>>>8)&255,(value>>>16)&255,(value>>>24)&255]}
+    function zipDosStamp(date){
+      var d=date||new Date(), year=Math.max(1980,d.getFullYear());
+      return {time:((d.getHours()<<11)|(d.getMinutes()<<5)|Math.floor(d.getSeconds()/2))&65535,date:(((year-1980)<<9)|((d.getMonth()+1)<<5)|d.getDate())&65535};
+    }
+    function zipPart(parts){
+      var total=0;
+      parts.forEach(function(part){total+=part.length});
+      var out=new Uint8Array(total), offset=0;
+      parts.forEach(function(part){out.set(part,offset);offset+=part.length});
+      return out;
+    }
+    function concatZipParts(parts,total){
+      var out=new Uint8Array(total), offset=0;
+      parts.forEach(function(part){out.set(part,offset);offset+=part.length});
+      return out;
+    }
+    function makeStoreZip(files){
+      var localParts=[], centralParts=[], offset=0, stamp=zipDosStamp(new Date());
+      files.forEach(function(file){
+        var nameBytes=zipBytes(file.name), dataBytes=file.data instanceof Uint8Array?file.data:zipBytes(file.data), crc=zipCrc32(dataBytes);
+        var local=zipPart([
+          zipU32(0x04034b50),zipU16(20),zipU16(2048),zipU16(0),zipU16(stamp.time),zipU16(stamp.date),
+          zipU32(crc),zipU32(dataBytes.length),zipU32(dataBytes.length),zipU16(nameBytes.length),zipU16(0),nameBytes,dataBytes
+        ]);
+        var central=zipPart([
+          zipU32(0x02014b50),zipU16(20),zipU16(20),zipU16(2048),zipU16(0),zipU16(stamp.time),zipU16(stamp.date),
+          zipU32(crc),zipU32(dataBytes.length),zipU32(dataBytes.length),zipU16(nameBytes.length),zipU16(0),zipU16(0),zipU16(0),zipU16(0),zipU32(0),zipU32(offset),nameBytes
+        ]);
+        localParts.push(local);
+        centralParts.push(central);
+        offset+=local.length;
+      });
+      var centralOffset=offset, centralSize=centralParts.reduce(function(sum,part){return sum+part.length},0);
+      var end=zipPart([zipU32(0x06054b50),zipU16(0),zipU16(0),zipU16(files.length),zipU16(files.length),zipU32(centralSize),zipU32(centralOffset),zipU16(0)]);
+      return concatZipParts(localParts.concat(centralParts).concat([end]),centralOffset+centralSize+end.length);
+    }
+    function contractDocxBlob(title, body){
+      var safeTitle=title||"계약서", now=new Date().toISOString(), html=contractWordDocShell(safeTitle,body);
+      var contentTypes='<?xml version="1.0" encoding="UTF-8" standalone="yes"?>'
+        +'<Types xmlns="http://schemas.openxmlformats.org/package/2006/content-types">'
+        +'<Default Extension="rels" ContentType="application/vnd.openxmlformats-package.relationships+xml"/>'
+        +'<Default Extension="xml" ContentType="application/xml"/>'
+        +'<Default Extension="htm" ContentType="text/html"/>'
+        +'<Override PartName="/word/document.xml" ContentType="application/vnd.openxmlformats-officedocument.wordprocessingml.document.main+xml"/>'
+        +'<Override PartName="/word/styles.xml" ContentType="application/vnd.openxmlformats-officedocument.wordprocessingml.styles+xml"/>'
+        +'<Override PartName="/docProps/core.xml" ContentType="application/vnd.openxmlformats-package.core-properties+xml"/>'
+        +'<Override PartName="/docProps/app.xml" ContentType="application/vnd.openxmlformats-officedocument.extended-properties+xml"/>'
+        +'</Types>';
+      var rootRels='<?xml version="1.0" encoding="UTF-8" standalone="yes"?>'
+        +'<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships">'
+        +'<Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/officeDocument" Target="word/document.xml"/>'
+        +'<Relationship Id="rId2" Type="http://schemas.openxmlformats.org/package/2006/relationships/metadata/core-properties" Target="docProps/core.xml"/>'
+        +'<Relationship Id="rId3" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/extended-properties" Target="docProps/app.xml"/>'
+        +'</Relationships>';
+      var docRels='<?xml version="1.0" encoding="UTF-8" standalone="yes"?>'
+        +'<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships">'
+        +'<Relationship Id="rIdHtml" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/aFChunk" Target="afchunk.htm"/>'
+        +'<Relationship Id="rIdStyles" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/styles" Target="styles.xml"/>'
+        +'</Relationships>';
+      var documentXml='<?xml version="1.0" encoding="UTF-8" standalone="yes"?>'
+        +'<w:document xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main" xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships">'
+        +'<w:body><w:altChunk r:id="rIdHtml"/><w:sectPr><w:pgSz w:w="11906" w:h="16838"/><w:pgMar w:top="720" w:right="720" w:bottom="720" w:left="720" w:header="0" w:footer="0" w:gutter="0"/><w:cols w:space="425"/><w:docGrid w:linePitch="360"/></w:sectPr></w:body>'
+        +'</w:document>';
+      var stylesXml='<?xml version="1.0" encoding="UTF-8" standalone="yes"?>'
+        +'<w:styles xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main"><w:style w:type="paragraph" w:default="1" w:styleId="Normal"><w:name w:val="Normal"/><w:qFormat/></w:style></w:styles>';
+      var coreXml='<?xml version="1.0" encoding="UTF-8" standalone="yes"?>'
+        +'<cp:coreProperties xmlns:cp="http://schemas.openxmlformats.org/package/2006/metadata/core-properties" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:dcterms="http://purl.org/dc/terms/" xmlns:dcmitype="http://purl.org/dc/dcmitype/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">'
+        +'<dc:title>'+xmlEsc(safeTitle)+'</dc:title><dc:creator>총무 업무 관리</dc:creator><cp:lastModifiedBy>총무 업무 관리</cp:lastModifiedBy><dcterms:created xsi:type="dcterms:W3CDTF">'+now+'</dcterms:created><dcterms:modified xsi:type="dcterms:W3CDTF">'+now+'</dcterms:modified></cp:coreProperties>';
+      var appXml='<?xml version="1.0" encoding="UTF-8" standalone="yes"?><Properties xmlns="http://schemas.openxmlformats.org/officeDocument/2006/extended-properties" xmlns:vt="http://schemas.openxmlformats.org/officeDocument/2006/docPropsVTypes"><Application>총무 업무 관리</Application><DocSecurity>0</DocSecurity><ScaleCrop>false</ScaleCrop><Company>Made By. PKM</Company></Properties>';
+      return new Blob([makeStoreZip([
+        {name:"[Content_Types].xml",data:contentTypes},
+        {name:"_rels/.rels",data:rootRels},
+        {name:"docProps/core.xml",data:coreXml},
+        {name:"docProps/app.xml",data:appXml},
+        {name:"word/document.xml",data:documentXml},
+        {name:"word/_rels/document.xml.rels",data:docRels},
+        {name:"word/styles.xml",data:stylesXml},
+        {name:"word/afchunk.htm",data:html}
+      ])],{type:DOCX_MIME});
+    }
     function leaseContractWordDocHtml(doc){
       var title=((doc||{}).title||"임대차계약서").replace(/[\\/:*?\"<>|]/g,"_"), body=leaseContractPreviewHtml(doc);
       return contractWordDocShell(title, body);
@@ -2477,8 +2578,8 @@
       setTimeout(function(){w.print()},300);
     }
     function downloadLeaseContractDoc(){
-      var doc=readLeaseContractEditor(), title=(doc.title||"임대차계약서").replace(/[\\/:*?\"<>|]/g,"_"), html=leaseContractWordDocHtml(doc), blob=new Blob(['\ufeff'+html],{type:"application/msword"}), url=URL.createObjectURL(blob), a=document.createElement("a");
-      a.href=url;a.download=title+".doc";document.body.appendChild(a);a.click();a.remove();URL.revokeObjectURL(url);toast("Word 호환 문서를 저장했습니다.");
+      var doc=readLeaseContractEditor(), title=(doc.title||"임대차계약서").replace(/[\\/:*?\"<>|]/g,"_"), body=leaseContractPreviewHtml(doc), blob=contractDocxBlob(title,body), url=URL.createObjectURL(blob), a=document.createElement("a");
+      a.href=url;a.download=title+".docx";document.body.appendChild(a);a.click();a.remove();URL.revokeObjectURL(url);toast("Word 문서(.docx)를 저장했습니다. 여백 좁게 값이 문서에 적용됩니다.");
     }
     function addLeaseContractTerm(){
       var doc=readLeaseContractEditor();
@@ -2805,7 +2906,7 @@
     function copySaleContractTitle(){var title=((saleContractTitle||{}).value||"").trim()||buildSaleContractTitle(readSaleContractEditor());try{navigator.clipboard.writeText(title).then(function(){toast("문서 제목을 복사했습니다.")}).catch(function(){alert("문서 제목:\n"+title)})}catch(e){alert("문서 제목:\n"+title)}}
     function copySaleContractToClipboard(){var doc=readSaleContractEditor(), html=saleContractPreviewHtml(doc), clipboardHtml=saleContractClipboardHtml(doc), holder=document.createElement("div");holder.innerHTML=html;var text=holder.innerText||holder.textContent||"";try{if(window.ClipboardItem&&navigator.clipboard&&navigator.clipboard.write){navigator.clipboard.write([new ClipboardItem({"text/html":new Blob([clipboardHtml],{type:"text/html"}),"text/plain":new Blob([text],{type:"text/plain"})})]).then(function(){toast("계약서를 클립보드에 복사했습니다. Word에서 Ctrl+V로 붙여넣기 하세요.")}).catch(function(){fallbackCopyLeaseContractHtml(html)})}else fallbackCopyLeaseContractHtml(html)}catch(e){fallbackCopyLeaseContractHtml(html)}}
     function printSaleContractPdf(){var doc=readSaleContractEditor(), title=(doc.title||"매매계약서").replace(/[\\/:*?\"<>|]/g,"_"), html='<!DOCTYPE html><html lang="ko"><head><meta charset="UTF-8"><title>'+esc(title)+'</title><style>@page{size:A4;margin:5mm 0}body{margin:0;background:#fff;font-family:BatangChe,바탕체,Batang,바탕,serif;color:#111}#contract-preview{width:210mm!important;min-width:210mm!important;max-width:210mm!important;min-height:287mm!important;padding:0!important;box-shadow:none!important;font-family:BatangChe,바탕체,Batang,바탕,serif!important} table{page-break-inside:avoid;white-space:nowrap;word-break:keep-all;font-family:BatangChe,바탕체,Batang,바탕,serif!important} p,h1{page-break-inside:avoid}</style></head><body>'+saleContractPreviewHtml(doc)+'</body></html>', w=window.open("","saleContractPrint","width=1200,height=900");if(!w){alert("팝업이 차단되었습니다. 팝업 허용 후 다시 시도해 주세요.");return}w.document.open();w.document.write(html);w.document.close();w.focus();setTimeout(function(){w.print()},300)}
-    function downloadSaleContractDoc(){var doc=readSaleContractEditor(), title=(doc.title||"매매계약서").replace(/[\\/:*?\"<>|]/g,"_"), html=saleContractWordDocHtml(doc), blob=new Blob(['\ufeff'+html],{type:"application/msword"}), url=URL.createObjectURL(blob), a=document.createElement("a");a.href=url;a.download=title+".doc";document.body.appendChild(a);a.click();a.remove();URL.revokeObjectURL(url);toast("Word 호환 문서를 저장했습니다.")}
+    function downloadSaleContractDoc(){var doc=readSaleContractEditor(), title=(doc.title||"매매계약서").replace(/[\\/:*?\"<>|]/g,"_"), body=saleContractPreviewHtml(doc), blob=contractDocxBlob(title,body), url=URL.createObjectURL(blob), a=document.createElement("a");a.href=url;a.download=title+".docx";document.body.appendChild(a);a.click();a.remove();URL.revokeObjectURL(url);toast("Word 문서(.docx)를 저장했습니다. 여백 좁게 값이 문서에 적용됩니다.")}
     function addSaleContractTerm(){var doc=readSaleContractEditor();doc.specialTerms.push(normSaleContractTerm({id:makeId(),enabled:true,content:"",isDefault:false}));renderSaleContractTerms(doc.specialTerms);bindSaleContractEditorInputs();syncSaleContractComputed()}
     function removeSaleContractTerm(id){var doc=readSaleContractEditor();doc.specialTerms=doc.specialTerms.filter(function(term){return term.id!==id});renderSaleContractTerms(doc.specialTerms);bindSaleContractEditorInputs();syncSaleContractComputed()}
     function resetSaleContractTerms(){var doc=readSaleContractEditor();doc.specialTerms=saleContractDefaultTerms(doc);renderSaleContractTerms(doc.specialTerms);bindSaleContractEditorInputs();syncSaleContractComputed()}
