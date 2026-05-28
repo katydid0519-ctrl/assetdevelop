@@ -4713,43 +4713,25 @@ function exportVehicleExcel(){var v=visibleVehicleCols(), rows=filteredVehicles(
     (function(){
       var deferredInstallPrompt = null;
       var installButton = document.getElementById("installAppBtn");
-
-      function hideInstallButton(){
-        if(installButton) installButton.hidden = true;
-      }
-
-      if("serviceWorker" in navigator){
-        window.addEventListener("load", function(){
-          navigator.serviceWorker.register("./service-worker.js").catch(function(error){
-            console.warn("서비스 워커 등록 실패:", error);
-          });
-        });
-      }
-
-      window.addEventListener("beforeinstallprompt", function(event){
-        event.preventDefault();
-        deferredInstallPrompt = event;
-        if(installButton) installButton.hidden = false;
-      });
-
-      window.addEventListener("appinstalled", function(){
-        deferredInstallPrompt = null;
-        hideInstallButton();
-      });
-
-      if(installButton){
-        installButton.addEventListener("click", async function(){
-          if(!deferredInstallPrompt){
-            hideInstallButton();
-            return;
-          }
-
-          deferredInstallPrompt.prompt();
-          await deferredInstallPrompt.userChoice;
-          deferredInstallPrompt = null;
-          hideInstallButton();
-        });
-      }
+      var INSTALL_STATE_KEY = "assetDevelopPwaInstalled";
+      var displayModeQuery = window.matchMedia ? window.matchMedia("(display-mode: standalone)") : null;
+      function storageGet(key){try{return localStorage.getItem(key)}catch(_){return null}}
+      function storageSet(key,value){try{localStorage.setItem(key,value)}catch(_){}}
+      function storageRemove(key){try{localStorage.removeItem(key)}catch(_){}}
+      function isRunningInstalled(){return (displayModeQuery && displayModeQuery.matches) || window.navigator.standalone === true}
+      function isPwaInstalled(){return storageGet(INSTALL_STATE_KEY) === "true" || isRunningInstalled()}
+      function updateInstallButton(label, disabled, hidden){if(!installButton) return;installButton.hidden = !!hidden;installButton.disabled = !!disabled;installButton.textContent = label;installButton.setAttribute("aria-label", label);installButton.classList.toggle("is-installed", label === "설치됨")}
+      function setInstallWaiting(){isPwaInstalled() ? setInstallInstalled() : updateInstallButton("앱 설치", false, true)}
+      function setInstallReady(){isPwaInstalled() ? setInstallInstalled() : updateInstallButton("앱 설치", false, false)}
+      function setInstallInstalling(){updateInstallButton("설치 중", true, false)}
+      function setInstallInstalled(){updateInstallButton("설치됨", true, false)}
+      if("serviceWorker" in navigator){window.addEventListener("load", function(){navigator.serviceWorker.register("./service-worker.js").catch(function(error){console.warn("서비스 워커 등록 실패:", error)})})}
+      if(isPwaInstalled()) setInstallInstalled(); else setInstallWaiting();
+      window.addEventListener("beforeinstallprompt", function(event){event.preventDefault();if(isRunningInstalled()){setInstallInstalled();return}storageRemove(INSTALL_STATE_KEY);deferredInstallPrompt = event;setInstallReady()});
+      window.addEventListener("appinstalled", function(){deferredInstallPrompt = null;storageSet(INSTALL_STATE_KEY, "true");setInstallInstalled()});
+      if(installButton){installButton.addEventListener("click", async function(){if(isPwaInstalled()){setInstallInstalled();return}if(!deferredInstallPrompt){setInstallWaiting();return}deferredInstallPrompt.prompt();var choice = await deferredInstallPrompt.userChoice;deferredInstallPrompt = null;if(choice && choice.outcome === "accepted") setInstallInstalling(); else setInstallReady()})}
+      var syncInstalledState = function(){if(isPwaInstalled()) setInstallInstalled()};
+      if(displayModeQuery && typeof displayModeQuery.addEventListener === "function") displayModeQuery.addEventListener("change", syncInstalledState);else if(displayModeQuery && typeof displayModeQuery.addListener === "function") displayModeQuery.addListener(syncInstalledState);
     })();
   </script>
 </body>

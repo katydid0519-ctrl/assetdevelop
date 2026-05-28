@@ -1,7 +1,7 @@
 // 총무 업무 관리 PWA 서비스 워커
 // 앱 실행에 필요한 주요 파일을 캐시하여, 최초 접속 이후 오프라인에서도 기본 화면을 열 수 있게 합니다.
 
-const CACHE_VERSION = "v14";
+const CACHE_VERSION = "v15";
 const CACHE_NAME = `cert-app-${CACHE_VERSION}`;
 
 const CDN_URLS = [
