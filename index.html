@@ -111,6 +111,7 @@
         <div class="nav-flyout" id="workToolsFlyout">
           <button class="navbtn" data-tab="tax"><span>🧾</span>매출세금계산서<span class="count" id="cTax">0</span></button>
           <button class="navbtn" type="button" onclick="openDraftFormatterPopup()"><span>📝</span>기안문 작성<span class="count" id="cDraft">0</span></button>
+          <button class="navbtn" type="button" onclick="openDemandLetterPopup()"><span>📮</span>내용증명서 작성</button>
           <button class="navbtn" data-tab="lease-contracts"><span>📘</span>임대차계약서 작성<span class="count" id="cLeaseContract">0</span></button>
           <button class="navbtn" data-tab="sale-contracts"><span>📗</span>매매계약서 작성<span class="count" id="cSaleContract">0</span></button>
         </div>
@@ -740,7 +741,7 @@
   <div class="toast" id="toast"></div>
   <script>
     /* ===== JS 1: 데이터 저장, 공통 계산, 대시보드/표 렌더링 ===== */
-    var APP_VERSION="v2026.05.26.11", APP_VERSION_NOTE="처음 사용 안내 다시 보지 않음 옵션 추가", APP_VERSION_KEY="realEstateLeaseManager.appVersion.v1";
+    var APP_VERSION="v2026.05.28.1", APP_VERSION_NOTE="업무 툴에 내용증명서 작성 사이트 연결 추가", APP_VERSION_KEY="realEstateLeaseManager.appVersion.v1";
     var KEY="realEstateLeaseManager.records.v1", ASSET_KEY="realEstateLeaseManager.assets.v1", INV_KEY="realEstateLeaseManager.investments.v1", LEASEIN_KEY="realEstateLeaseManager.leaseIns.v1", VEHICLE_KEY="realEstateLeaseManager.vehicles.v1", PAY_KEY="realEstateLeaseManager.payments.v1", CUST_KEY="realEstateLeaseManager.customers.v1", TAX_KEY="realEstateLeaseManager.taxInvoices.v1", DRAFT_KEY="realEstateLeaseManager.draftDocs.v1", LEASE_CONTRACT_KEY="realEstateLeaseManager.leaseContracts.v1", SALE_CONTRACT_KEY="realEstateLeaseManager.saleContracts.v1", SCHEDULE_KEY="realEstateLeaseManager.schedules.v1", COL_KEY="realEstateLeaseManager.hiddenColumns.v1", LEASEIN_COL_KEY="realEstateLeaseManager.leaseInHiddenColumns.v1", VEHICLE_COL_KEY="realEstateLeaseManager.vehicleHiddenColumns.v1", SNAP_KEY="realEstateLeaseManager.restorePoints.v1", records=[], assets=[], investments=[], leaseIns=[], vehicles=[], payments=[], customers=[], taxInvoices=[], draftDocs=[], leaseContracts=[], saleContracts=[], schedules=[], hiddenCols={}, hiddenLeaseInCols={}, hiddenVehicleCols={}, restorePoints=[], sort={key:"siteName",dir:"asc"}, cal=new Date(), payCal=new Date(), generalCal=new Date(), scheduleCal=new Date(), expiryFilterDays=90, generalExpiryDays=90, paymentDraftMode="default", selectedTaxId="", selectedDraftId="", selectedLeaseContractId="", selectedSaleContractId="", selectedScheduleDate="", selectedScheduleId="", taxRowPickerIdx=-1, leaseContractStep=1, saleContractStep=1, printPreset="compact", draftViewMode="write", leaseContractViewMode="input", saleContractViewMode="input", assetDevTabs=["asset-dashboard","assets","investments","rent","payments","customers","calendar","stats"], generalTabs=["general-dashboard","leasein","vehicles","general-customers","general-calendar"], workToolTabs=["tax","drafts","lease-contracts","sale-contracts"]; cal.setDate(1); payCal.setDate(1); generalCal.setDate(1); scheduleCal.setDate(1); selectedScheduleDate=dateStr(today());
     var ONBOARD_KEY="realEstateLeaseManager.firstVisitGuideOptOut.v2";
     var SIDEBAR_COLLAPSE_KEY="realEstateLeaseManager.sidebarCollapsed.v1";
@@ -766,6 +767,18 @@
       if(popup){
         popup.focus();
         toast("기안문 작성 사이트를 팝업으로 열었습니다.");
+        return;
+      }
+      alert("팝업이 차단되었습니다. 브라우저에서 팝업 허용 후 다시 눌러 주세요.\n"+url);
+    }
+    function openDemandLetterPopup(){
+      closeWorkToolsFlyout();
+      var url="https://demandletterapp.netlify.app";
+      var features="popup=yes,width=1320,height=900,left=80,top=40,resizable=yes,scrollbars=yes";
+      var popup=window.open(url,"demandLetterPopup",features);
+      if(popup){
+        popup.focus();
+        toast("내용증명서 작성 사이트를 팝업으로 열었습니다.");
         return;
       }
       alert("팝업이 차단되었습니다. 브라우저에서 팝업 허용 후 다시 눌러 주세요.\n"+url);
@@ -4200,7 +4213,7 @@ function exportVehicleExcel(){var v=visibleVehicleCols(), rows=filteredVehicles(
       return '<div class="guide-doc"><div class="guide-block"><div class="guide-label">빠른 안내</div><p>이 설명서는 처음 사용하는 사용자가 화면 구조와 시작 순서를 빠르게 이해할 수 있도록 정리한 안내입니다.</p></div>'+html+'</div>';
     }
     function manualTextWithWorkTools(){
-      return MANUAL_TEXT+"\n\n---\n\n## 업무 툴 간단 안내\n\n[매출세금계산서]\n  - 월별 매출 세금계산서 문서를 만들고, 거래처 정보와 매출 내역을 한 화면에서 관리합니다.\n  - HTML 복사, PDF/엑셀 출력, 전표 엑셀 출력, 금액 검증 기능을 함께 사용할 수 있습니다.\n\n[기안문 작성]\n  - 기안문 작성 전용 사이트(gwformatter.netlify.app)를 팝업으로 열어 그룹웨어용 HTML을 작성합니다.\n  - 원본 텍스트, 표 붙여넣기, 자동 들여쓰기, 그룹웨어 폭 기준 정리를 지원합니다.\n\n[임대차계약서 작성]\n  - 부동산 임대차계약서를 단계별로 입력하고 Word 문서로 저장하거나 복사할 수 있습니다.\n  - 계약 조건, 특약사항, 임대인/임차인 정보를 문서 양식에 맞춰 자동 배치합니다.\n\n[매매계약서 작성]\n  - 부동산 매매계약서를 작성하고 Word 문서로 저장할 수 있습니다.\n  - 별첨 특약 추가 사항까지 관리할 수 있어 계약별 특약을 분리해 정리하기 좋습니다.\n";
+      return MANUAL_TEXT+"\n\n---\n\n## 업무 툴 간단 안내\n\n[매출세금계산서]\n  - 월별 매출 세금계산서 문서를 만들고, 거래처 정보와 매출 내역을 한 화면에서 관리합니다.\n  - HTML 복사, PDF/엑셀 출력, 전표 엑셀 출력, 금액 검증 기능을 함께 사용할 수 있습니다.\n\n[기안문 작성]\n  - 기안문 작성 전용 사이트(gwformatter.netlify.app)를 팝업으로 열어 그룹웨어용 HTML을 작성합니다.\n  - 원본 텍스트, 표 붙여넣기, 자동 들여쓰기, 그룹웨어 폭 기준 정리를 지원합니다.\n\n[내용증명서 작성]\n  - 내용증명서 작성 사이트(demandletterapp.netlify.app)를 팝업으로 열어 문서를 작성합니다.\n\n[임대차계약서 작성]\n  - 부동산 임대차계약서를 단계별로 입력하고 Word 문서로 저장하거나 복사할 수 있습니다.\n  - 계약 조건, 특약사항, 임대인/임차인 정보를 문서 양식에 맞춰 자동 배치합니다.\n\n[매매계약서 작성]\n  - 부동산 매매계약서를 작성하고 Word 문서로 저장할 수 있습니다.\n  - 별첨 특약 추가 사항까지 관리할 수 있어 계약별 특약을 분리해 정리하기 좋습니다.\n";
     }
     function openManualGuide(){
       parkForm();
