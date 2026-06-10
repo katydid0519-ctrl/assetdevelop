@@ -1,0 +1,10 @@
+{
+  "_guide": "관리자 배포 백업 파일입니다. 배포할 때 enabled를 true로 바꾸고, id를 이전과 다른 값으로 변경한 뒤, backup에 앱에서 만든 백업 JSON 객체를 넣으세요. scope는 all, assetDev, general 중 하나입니다.",
+  "enabled": false,
+  "id": "backup-2026-06-09-001",
+  "scope": "all",
+  "title": "새 백업 데이터가 있습니다",
+  "message": "관리자가 배포한 최신 백업을 적용할 수 있습니다.",
+  "createdAt": "2026-06-09T00:00:00+09:00",
+  "backup": null
+}
