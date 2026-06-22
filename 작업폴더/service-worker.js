@@ -1,7 +1,7 @@
 // 총무 업무 관리 PWA 서비스 워커
 // 앱 실행에 필요한 주요 파일을 캐시하여, 최초 접속 이후 오프라인에서도 기본 화면을 열 수 있게 합니다.
 
-const CACHE_VERSION = "v30";
+const CACHE_VERSION = "v32";
 const CACHE_NAME = `cert-app-${CACHE_VERSION}`;
 
 const CDN_URLS = [
@@ -11,6 +11,44 @@ const CDN_URLS = [
   "https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"
 ];
 
+const LOCAL_ICON_URLS = [
+  "./assets/icons/app/general-affairs.svg",
+  "./assets/icons/app/investment-asset.svg",
+  "./assets/icons/app/maintenance-request.svg",
+  "./assets/icons/app/vehicle-management.svg",
+  "./assets/icons/web-ui/bookmark.svg",
+  "./assets/icons/web-ui/calendar.svg",
+  "./assets/icons/web-ui/check-circle.svg",
+  "./assets/icons/web-ui/chevron-right.svg",
+  "./assets/icons/web-ui/clipboard.svg",
+  "./assets/icons/web-ui/clock.svg",
+  "./assets/icons/web-ui/copy.svg",
+  "./assets/icons/web-ui/credit-card.svg",
+  "./assets/icons/web-ui/download.svg",
+  "./assets/icons/web-ui/edit.svg",
+  "./assets/icons/web-ui/file-text.svg",
+  "./assets/icons/web-ui/filter.svg",
+  "./assets/icons/web-ui/folder.svg",
+  "./assets/icons/web-ui/globe.svg",
+  "./assets/icons/web-ui/grid.svg",
+  "./assets/icons/web-ui/help-circle.svg",
+  "./assets/icons/web-ui/home.svg",
+  "./assets/icons/web-ui/info.svg",
+  "./assets/icons/web-ui/list.svg",
+  "./assets/icons/web-ui/mail.svg",
+  "./assets/icons/web-ui/map-pin.svg",
+  "./assets/icons/web-ui/menu.svg",
+  "./assets/icons/web-ui/plus.svg",
+  "./assets/icons/web-ui/print.svg",
+  "./assets/icons/web-ui/refresh.svg",
+  "./assets/icons/web-ui/search.svg",
+  "./assets/icons/web-ui/settings.svg",
+  "./assets/icons/web-ui/trash.svg",
+  "./assets/icons/web-ui/upload.svg",
+  "./assets/icons/web-ui/users.svg",
+  "./assets/icons/web-ui/wallet.svg"
+];
+
 const PRECACHE_URLS = [
   "./",
   "./index.html",
@@ -18,6 +56,7 @@ const PRECACHE_URLS = [
   "./manifest.json",
   "./icons/icon-192.png",
   "./icons/icon-512.png",
+  ...LOCAL_ICON_URLS,
   ...CDN_URLS
 ];
 
